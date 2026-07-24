@@ -18,13 +18,26 @@ body{background:#dde1f0;min-height:100vh;padding-bottom:30px}
 .hdr-right{background:#fff;border-radius:10px;padding:8px 14px;text-align:center;color:#0d1b6e;font-size:12px}
 .live{font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;margin-top:4px;display:inline-block}
 .live.on{background:#27ae60;color:#fff}.live.off{background:#e74c3c;color:#fff}.live.loading{background:#f39c12;color:#fff}
-#statusBar{margin:0 10px 8px;padding:8px 16px;border-radius:8px;font-size:13px;font-weight:600;text-align:center}
+/* source badges */
+.src-badges{display:flex;gap:6px;justify-content:center;margin-top:5px}
+.badge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px}
+.badge.en{background:#1565c0;color:#fff}.badge.te{background:#e65100;color:#fff}
+#statusBar{margin:0 10px 6px;padding:8px 16px;border-radius:8px;font-size:13px;font-weight:600;text-align:center}
 .s-load{background:#fff3cd;color:#856404}.s-ok{background:#d4edda;color:#155724}.s-err{background:#f8d7da;color:#721c24;line-height:1.8}
+/* load progress */
+#loadProgress{margin:0 10px 8px;display:none}
+.prog-bar{height:8px;border-radius:4px;background:#e0e0e0;overflow:hidden}
+.prog-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,#1a3a8f,#27ae60);transition:width .4s}
+.prog-labels{display:flex;justify-content:space-between;font-size:11px;color:#555;margin-top:4px}
 .fbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;background:#fff;margin:0 10px 10px;border-radius:10px;padding:10px 16px;box-shadow:0 2px 8px #0002}
 .fbar select,.fbar input[type=date]{border:2px solid #c0392b;border-radius:20px;padding:5px 14px;font-size:12px;color:#0d1b6e;background:#fff;outline:none;cursor:pointer;min-width:140px}
 .rbtn{background:#0d1b6e;color:#fff;border:none;border-radius:20px;padding:6px 18px;font-size:12px;font-weight:700;cursor:pointer;margin-left:auto}
 .rbtn:hover{background:#c0392b}
 .upd{font-size:11px;color:#888}
+/* lang toggle */
+.lang-toggle{display:flex;gap:6px;align-items:center;font-size:12px;font-weight:700;color:#0d1b6e}
+.lang-toggle label{display:flex;align-items:center;gap:4px;cursor:pointer}
+.lang-toggle input{cursor:pointer}
 .stats-row{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin:0 10px 10px}
 .stat-box{background:#fff;border-radius:10px;padding:10px 8px;text-align:center;box-shadow:0 2px 8px #0002;border-top:4px solid #0d1b6e}
 .stat-box .sv{font-size:1.4rem;font-weight:900;color:#c0392b}
@@ -41,6 +54,8 @@ table{width:100%;border-collapse:collapse;font-size:11.5px}
 thead th{background:#7b1fa2;color:#fff;padding:7px 10px;text-align:left;position:sticky;top:0;z-index:2;white-space:nowrap}
 tbody tr:nth-child(odd){background:#faf5ff}tbody tr:hover{background:#ede7f6}
 tbody td{padding:6px 10px;border-bottom:1px solid #e0e0e0;white-space:nowrap;max-width:200px;overflow:hidden;text-overflow:ellipsis}
+.src-tag{display:inline-block;font-size:9px;font-weight:700;padding:1px 5px;border-radius:6px;margin-left:4px}
+.src-tag.en{background:#1565c0;color:#fff}.src-tag.te{background:#e65100;color:#fff}
 .pager{display:flex;justify-content:flex-end;align-items:center;gap:10px;padding:8px 16px;border-top:1px solid #eee;font-size:12px}
 .pager button{background:#0d1b6e;color:#fff;border:none;border-radius:6px;padding:4px 12px;cursor:pointer;font-size:12px}
 .pager button:disabled{background:#bbb;cursor:default}
@@ -48,9 +63,7 @@ tbody td{padding:6px 10px;border-bottom:1px solid #e0e0e0;white-space:nowrap;max
 @keyframes spin{to{transform:rotate(360deg)}}
 #loadOverlay{position:fixed;inset:0;background:#ffffffdd;z-index:999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;font-size:16px;font-weight:700;color:#0d1b6e}
 .big-spin{width:52px;height:52px;border:6px solid #dde1f0;border-top-color:#0d1b6e;border-radius:50%;animation:spin .8s linear infinite}
-/* instructions box */
 .inst-box{background:#e8f5e9;border:2px solid #27ae60;border-radius:10px;padding:14px 18px;margin:0 10px 10px;font-size:13px;color:#1b5e20;display:none}
-.inst-box b{font-size:14px}
 .inst-box ol{margin:8px 0 0 20px;line-height:2}
 @media(max-width:900px){.row2,.stats-row{grid-template-columns:1fr 1fr}.hdr{flex-direction:column;gap:8px;text-align:center}}
 @media(max-width:600px){.row2,.stats-row{grid-template-columns:1fr}}
@@ -60,14 +73,19 @@ tbody td{padding:6px 10px;border-bottom:1px solid #e0e0e0;white-space:nowrap;max
 
 <div id="loadOverlay">
   <div class="big-spin"></div>
-  <div>📡 Google Sheet నుండి Live Data తీసుకుంటున్నాం…</div>
-  <div style="font-size:12px;font-weight:400;color:#555">దయచేసి కొంచెం వేచి ఉండండి</div>
+  <div id="overlayMsg">📡 రెండు Google Sheets నుండి data తీసుకుంటున్నాం…</div>
+  <div style="font-size:12px;font-weight:400;color:#555">English + Telugu responses merge అవుతున్నాయి</div>
 </div>
 
+<!-- HEADER -->
 <div class="hdr">
   <div class="hdr-left">
     <div class="lbl">Total Feedbacks</div>
     <div class="cnt" id="totalCount">—</div>
+    <div class="src-badges">
+      <span class="badge en" id="enCount">EN: —</span>
+      <span class="badge te" id="teCount">TE: —</span>
+    </div>
   </div>
   <div class="hdr-mid">
     <h1>QR CODE FEEDBACK</h1>
@@ -75,38 +93,47 @@ tbody td{padding:6px 10px;border-bottom:1px solid #e0e0e0;white-space:nowrap;max
   </div>
   <div class="hdr-right">
     <b>🔴 LIVE DATA</b><br>
-    Auto-refresh: 60s<br>
+    English + Telugu<br>
     <span class="live loading" id="liveTag">⏳ Connecting</span>
   </div>
 </div>
 
 <div id="statusBar" class="s-load"><span class="spinner"></span>Google Sheets నుండి data fetch అవుతోంది…</div>
 
-<!-- HEADER DEBUG BOX -->
-<div id="headerDebug" style="display:none;margin:0 10px 8px;padding:10px 14px;background:#e3f2fd;border:2px solid #1565c0;border-radius:8px;font-size:12px;color:#0d47a1;line-height:2"></div>
+<!-- LOAD PROGRESS -->
+<div id="loadProgress">
+  <div class="prog-bar"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
+  <div class="prog-labels"><span id="progLabel">Fetching...</span><span id="progPct">0%</span></div>
+</div>
 
-<!-- INSTRUCTIONS (shown on error) -->
 <div class="inst-box" id="instBox">
-  <b>📋 Sheet ని Public చేయడానికి ఈ steps follow చేయండి:</b>
+  <b>📋 Sheet ని Public చేయడానికి:</b>
   <ol>
-    <li>Google Sheet తెరవండి</li>
-    <li>Menu లో <b>File → Share → Publish to web</b> click చేయండి</li>
-    <li><b>Sheet1</b> select చేయండి (first dropdown)</li>
-    <li><b>Comma-separated values (.csv)</b> select చేయండి (second dropdown)</li>
-    <li><b>Publish</b> button click చేయండి → <b>OK</b></li>
-    <li>తర్వాత <b>🔄 Refresh Now</b> button click చేయండి</li>
+    <li>Google Sheet → <b>File → Share → Publish to web</b></li>
+    <li><b>Sheet1 / Form Responses</b> → <b>CSV</b> select చేయండి</li>
+    <li><b>Publish</b> → OK చేయండి</li>
+    <li><b>🔄 Refresh Now</b> click చేయండి</li>
   </ol>
 </div>
 
+<!-- FILTERS -->
 <div class="fbar">
   <select id="fUnit" onchange="onUnitChange()"><option value="">All Units</option></select>
   <select id="fPS"   onchange="applyFilters()"><option value="">All PS Names</option></select>
   <select id="fCat"  onchange="applyFilters()"><option value="">All Categories</option></select>
   <input type="date" id="fFrom" onchange="applyFilters()" title="From Date">
   <input type="date" id="fTo"   onchange="applyFilters()" title="To Date">
+  <button class="rbtn" style="margin-left:0;background:#e67e22" onclick="clearDates()">✖ Clear Dates</button>
+  <!-- Language source filter -->
+  <div class="lang-toggle">
+    <label><input type="checkbox" id="chkEN" checked onchange="applyFilters()"> 🇮🇳 English</label>
+    <label><input type="checkbox" id="chkTE" checked onchange="applyFilters()"> 🇮🇳 Telugu</label>
+  </div>
   <button class="rbtn" onclick="loadData()">🔄 Refresh Now</button>
   <span class="upd" id="updTime"></span>
 </div>
+
+<div id="genderDebugBox" style="display:none;margin:0 10px 10px;padding:10px 14px;background:#fff3cd;border:2px solid #f39c12;border-radius:8px;font-size:12px;color:#856404;line-height:2"></div>
 
 <div class="stats-row" id="statsRow"></div>
 
@@ -116,17 +143,9 @@ tbody td{padding:6px 10px;border-bottom:1px solid #e0e0e0;white-space:nowrap;max
 </div>
 
 <div class="row2">
-  <div class="card">
-    <h3>👥 Gender Distribution</h3>
-    <canvas id="cGender" height="220"></canvas>
-    <div id="genderDebug" style="display:none;margin-top:8px;padding:8px;background:#fff3cd;border-radius:6px;font-size:11px;color:#856404;line-height:1.8"></div>
-  </div>
-  <div class="card">
-    <h3>📂 Category Distribution</h3>
-    <canvas id="cCat" height="220"></canvas>
-    <div id="catDebug" style="display:none;margin-top:8px;padding:8px;background:#fff3cd;border-radius:6px;font-size:11px;color:#856404;line-height:2"></div>
-  </div>
-  <div class="card"><h3>🌐 Language Distribution</h3><canvas id="cLang" height="220"></canvas></div>
+  <div class="card"><h3>👥 Gender Distribution</h3><canvas id="cGender" height="220"></canvas></div>
+  <div class="card"><h3>📂 Category Distribution</h3><canvas id="cCat" height="220"></canvas></div>
+  <div class="card"><h3>🌐 Language (EN vs TE)</h3><canvas id="cLang" height="220"></canvas></div>
 </div>
 
 <div class="tbl-wrap">
@@ -143,48 +162,174 @@ tbody td{padding:6px 10px;border-bottom:1px solid #e0e0e0;white-space:nowrap;max
 </div>
 
 <script>
-const SHEET_ID = '1FwWmc4fxD72v3gyri_u5gb2JHqTMM0yih1W5j3Rm9m8';
-const PAGE_SIZE = 25;
-let headers=[], allRows=[], filtered=[], page=1, charts={};
-
-// Multiple URL strategies
-function getURLs(){
-  const t = '&nocache='+Date.now();
-  return [
-    `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=Sheet1${t}`,
-    `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv${t}`,
-    `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=0${t}`,
-  ];
-}
-
-async function loadData(){
-  setStatus('load','<span class="spinner"></span>Google Sheets నుండి data fetch అవుతోంది…');
-  liveTag('loading','⏳ Connecting');
-  document.getElementById('instBox').style.display='none';
-
-  let lastErr='';
-  for(const url of getURLs()){
-    try{
-      const res = await fetch(url, {cache:'no-store'});
-      if(!res.ok) throw new Error('HTTP '+res.status);
-      const txt = await res.text();
-      if(!txt||txt.length<20) throw new Error('Empty response');
-      if(txt.trim().startsWith('<!')) throw new Error('HTML error page returned');
-      parseCSV(txt);
-      setStatus('ok','✅ Live data successfully loaded! ప్రతి 60 సెకన్లకు auto-refresh అవుతుంది.');
-      liveTag('on','● LIVE');
-      document.getElementById('updTime').textContent='Updated: '+new Date().toLocaleTimeString();
-      document.getElementById('loadOverlay').style.display='none';
-      return;
-    }catch(e){ lastErr=e.message; }
+/* ═══════════════════════════════════════
+   CONFIG — Two Sheet IDs + Tab GIDs
+═══════════════════════════════════════ */
+const SHEETS = [
+  {
+    id: '1RkFTwCMnFcQeK4xMSVrWFGg4nGIUBUeWHGWjN1BdrXU',
+    gid: '476498584',
+    lang: 'English',
+    tag: 'EN'
+  },
+  {
+    id: '1snVV_JRChE9_PNa3KJUXNlK0a9IwaoSlLwtiNXIOOWk',
+    gid: '271327414',
+    lang: 'Telugu',
+    tag: 'TE'
   }
+];
 
-  document.getElementById('loadOverlay').style.display='none';
-  setStatus('err','❌ Sheet access చేయలేకపోయాం! దయచేసి దిగువ instructions చూడండి. ('+lastErr+')');
-  liveTag('off','✖ Offline');
-  document.getElementById('instBox').style.display='block';
+const PAGE_SIZE = 25;
+let allRows = [], filtered = [], page = 1, charts = {};
+let _unitMap = null;
+
+/* ═══════════════════════════════════════
+   COLUMN MAPPING — English & Telugu headers → Normalized keys
+═══════════════════════════════════════ */
+const COL_MAP = {
+  // Submission Date
+  submissionDate: ['timestamp','submission date','సమర్పణ తేదీ','తేదీ','date'],
+  // Submission ID
+  submissionId:   ['submission id','సమర్పణ id','id'],
+  // Unit & PS (combined)
+  unitPS:         ['name of the unit & ps','name of the unit','యూనిట్ & పీఎస్ పేరు','యూనిట్','unit & ps','unit name'],
+  // Gender
+  gender:         ['gender','లింగం','sex'],
+  // Category
+  category:       ['type of category','category of feedback','category','విభాగం','కేటగిరీ','feedback category','type of cat','subject'],
+  // Remarks
+  remarks:        ['area for remarks','remarks','వ్యాఖ్యలు','feedback','area of remarks'],
+  // PS Code
+  psCode:         ['ps code','పీఎస్ కోడ్','code'],
+};
+
+function findCol(hdrs, key){
+  const kws = COL_MAP[key] || [key];
+  // exact match first
+  for(const k of kws){
+    const i = hdrs.findIndex(h=>h.trim().toLowerCase()===k.trim().toLowerCase());
+    if(i>=0) return i;
+  }
+  // partial match
+  for(const k of kws){
+    const i = hdrs.findIndex(h=>h.trim().toLowerCase().includes(k.trim().toLowerCase()));
+    if(i>=0) return i;
+  }
+  return -1;
 }
 
+/* ═══════════════════════════════════════
+   KNOWN UNITS
+═══════════════════════════════════════ */
+const KNOWN_UNITS = [
+  'Bhadradri Kothagudem','Jayashankar Bhupalpally','Komaram Bheem Asifabad',
+  'Komaram Bheem','Rajanna Sircilla','Jogulamba Gadwal','GRP Secunderabad',
+  'GRP Secondary','Future City','Mahabubabad','Mahabubnagar','Nagarkurnool',
+  'Wanaparthy','Sangareddy','Ramagundam','Karimnagar','Cyberabad',
+  'Rachakonda','Malkajgiri','Nizamabad','Kamareddy','Vikarabad',
+  'Nalgonda','Suryapet','Warangal','Khammam','Adilabad','Siddipet',
+  'Hyderabad','Medak','Mulugu','Nirmal','Jagtial',
+  'Yadadri Bhuvanagiri','Yadadri','Narayanapet','Narayanpet',
+  'CID','SIT','SOT','DGPR','ACB','SHE Teams','TSSP','GRP','AR','PTC'
+];
+
+const UNIT_NORMALIZE = {
+  'c i d':'CID','c i':'CID','c.i.d':'CID','cid':'CID',
+  'c b cid':'CB CID','cb cid':'CB CID',
+  's i t':'SIT','s o t':'SOT','a c b':'ACB','a r':'AR',
+  'g r p':'GRP','she teams':'SHE Teams','future city':'Future City',
+  'dgpr':'DGPR','ptc':'PTC',
+  'narayanapet':'Narayanpet','narayanpet':'Narayanpet',
+};
+
+function normalizeUnit(name){
+  if(!name) return name;
+  return UNIT_NORMALIZE[name.trim().toLowerCase()] || name;
+}
+
+function stripCode(val){
+  return (val||'').trim().replace(/_[0-9]+$/,'').trim();
+}
+
+function buildUnitMap(rows, unitPSColFn){
+  const map = {};
+  const codeGroups = {};
+  rows.forEach(r=>{
+    const raw=(r._unitPS||'').trim();
+    const m=raw.match(/_([0-9]{4})[0-9]*/);
+    if(m){
+      const p=m[1];
+      const s=stripCode(raw);
+      if(!codeGroups[p]) codeGroups[p]=[];
+      codeGroups[p].push(s);
+    }
+  });
+  Object.entries(codeGroups).forEach(([,vals])=>{
+    if(!vals.length) return;
+    let common=vals[0];
+    for(let i=1;i<vals.length;i++){
+      while(vals[i].indexOf(common)!==0) common=common.slice(0,-1);
+    }
+    common=common.trim();
+    if(common.length>0 && common!==vals[0]){
+      const ls=common.lastIndexOf(' ');
+      if(ls>0) common=common.slice(0,ls).trim();
+    }
+    vals.forEach(v=>{ map[v]=normalizeUnit(common||v); });
+  });
+  rows.forEach(r=>{
+    const s=stripCode((r._unitPS||'').trim());
+    for(const u of KNOWN_UNITS){
+      if(s.toLowerCase().startsWith(u.toLowerCase())){map[s]=u;break;}
+    }
+  });
+  return map;
+}
+
+// Normalize all whitespace (including NBSP, tabs, multiple spaces) to single space
+function normSpace(s){
+  return (s||'').replace(/[\s\u00A0]+/g,' ').trim();
+}
+
+function extractUnit(val, umap){
+  const s=normSpace(stripCode(val));
+  // Sort by length descending — longest unit name matches first (avoids "Yadadri" matching before "Yadadri Bhuvanagiri")
+  const sortedUnits=[...KNOWN_UNITS].sort((a,b)=>b.length-a.length);
+  for(const u of sortedUnits){
+    const ul=u.toLowerCase();
+    const sl=s.toLowerCase();
+    if(sl===ul || sl.startsWith(ul+' ')) return normalizeUnit(u);
+  }
+  if(umap && umap[s]) return normalizeUnit(umap[s]);
+  const parts=s.split(' ');
+  return normalizeUnit(parts.length>1?parts.slice(0,-1).join(' ').trim():s);
+}
+
+function extractPS(val, umap){
+  const s=normSpace(stripCode(val));
+  // Sort KNOWN_UNITS by length descending so longest match wins (avoids partial match issues)
+  const sortedUnits=[...KNOWN_UNITS].sort((a,b)=>b.length-a.length);
+  for(const u of sortedUnits){
+    if(s.toLowerCase().startsWith(u.toLowerCase()+' ')){
+      return s.slice(u.length).trim();
+    }
+  }
+  if(umap && umap[s]){
+    const u=umap[s];
+    if(s.toLowerCase().startsWith(u.toLowerCase()+' ')) return s.slice(u.length).trim();
+  }
+  const parts=s.split(' ');
+  return parts.length>1?parts.slice(1).join(' ').trim():'';
+}
+
+function isCombined(rows){
+  return rows.slice(0,30).some(r=>/_[0-9]+$/.test((r._unitPS||'').trim()));
+}
+
+/* ═══════════════════════════════════════
+   CSV PARSER
+═══════════════════════════════════════ */
 function parseCSV(raw){
   const txt=raw.replace(/^\uFEFF/,'');
   const lines=[]; let row=[],cell='',q=false;
@@ -194,322 +339,316 @@ function parseCSV(raw){
     else if(c===','&&!q){row.push(cell.trim());cell='';}
     else if((c==='\n'||c==='\r')&&!q){
       row.push(cell.trim());
-      if(row.some(x=>x))lines.push(row);
+      if(row.some(x=>x)) lines.push(row);
       row=[];cell='';if(c==='\r'&&txt[i+1]==='\n')i++;
     }else cell+=c;
   }
   if(cell||row.length){row.push(cell.trim());if(row.some(x=>x))lines.push(row);}
-  if(lines.length<2){setStatus('err','❌ Sheet empty లేదా data లేదు.');return;}
-  headers=lines[0];
-  allRows=lines.slice(1).filter(r=>r.some(c=>c));
-  _unitMap=null; // reset unit map cache for new data
-  buildFilters();applyFilters();
+  return lines;
 }
 
-// ── Column index: exact match first, then partial ──
-function ci(kws){
-  if(!Array.isArray(kws))kws=[kws];
-  // Pass 1: exact match (trimmed, case-insensitive)
-  for(const k of kws){
-    const i=headers.findIndex(h=>h.trim().toLowerCase()===k.trim().toLowerCase());
-    if(i>=0)return i;
+/* ═══════════════════════════════════════
+   FETCH ONE SHEET
+═══════════════════════════════════════ */
+async function fetchSheet(sheet){
+  const t='&nocache='+Date.now();
+  const urls=[
+    `https://docs.google.com/spreadsheets/d/${sheet.id}/gviz/tq?tqx=out:csv&gid=${sheet.gid}${t}`,
+    `https://docs.google.com/spreadsheets/d/${sheet.id}/export?format=csv&gid=${sheet.gid}${t}`,
+    `https://docs.google.com/spreadsheets/d/${sheet.id}/gviz/tq?tqx=out:csv${t}`,
+  ];
+  let lastErr='';
+  for(const url of urls){
+    try{
+      const res=await fetch(url,{cache:'no-store'});
+      if(!res.ok) throw new Error('HTTP '+res.status);
+      const txt=await res.text();
+      if(!txt||txt.length<10) throw new Error('Empty');
+      if(txt.trim().startsWith('<!')) throw new Error('HTML page');
+      return txt;
+    }catch(e){lastErr=e.message;}
   }
-  // Pass 2: partial match
-  for(const k of kws){
-    const i=headers.findIndex(h=>h.trim().toLowerCase().includes(k.trim().toLowerCase()));
-    if(i>=0)return i;
-  }
-  return -1;
+  throw new Error(sheet.tag+' sheet: '+lastErr);
 }
 
-// ── Dedicated column finders — very specific ──
-// ── Known Telangana Police Unit Names (longest first for correct matching) ──
-const KNOWN_UNITS = [
-  // Multi-word units FIRST (longest match priority)
-  'Bhadradri Kothagudem','Jayashankar Bhupalpally','Komaram Bheem Asifabad',
-  'Komaram Bheem','Rajanna Sircilla','Jogulamba Gadwal','GRP Secunderabad',
-  'GRP Secondary','Future City','Mahabubabad','Mahabubnagar','Nagarkurnool',
-  'Wanaparthy','Sangareddy','Ramagundam','Karimnagar','Cyberabad',
-  'Rachakonda','Malkajgiri','Nizamabad','Kamareddy','Vikarabad',
-  'Nalgonda','Suryapet','Warangal','Khammam','Adilabad','Siddipet',
-  'Hyderabad','Medak','Mulugu','Nirmal','Jagtial',
-  // Short/abbreviation units — after multi-word
-  'CID','SIT','SOT','DGPR','ACB','SHE Teams','TSSP','GRP','AR','PTC'
-];
-
-function colUnitPS(){
-  // Find "Name of the Unit" column index
-  for(let i=0;i<headers.length;i++){
-    const h=headers[i].trim().toLowerCase();
-    if(h==='name of the unit'||h==='unit name'||h==='unit') return i;
-  }
-  for(let i=0;i<headers.length;i++){
-    const h=headers[i].trim().toLowerCase();
-    if(h.includes('unit')&&!h.includes('code')) return i;
-  }
-  return -1;
-}
-function colUnit(){ return colUnitPS(); }
-
-// For the PS column — separate column header "PS"
-function colPS(){
-  for(let i=0;i<headers.length;i++){
-    const h=headers[i].trim().toLowerCase();
-    if(h==='ps'||h==='ps name'||h==='ps names'||h==='police station') return i;
-  }
-  for(let i=0;i<headers.length;i++){
-    const h=headers[i].trim().toLowerCase();
-    if(h.startsWith('ps')&&!h.includes('code')&&!h.includes('no')&&!h.includes('num')) return i;
-  }
-  return -1;
+/* ═══════════════════════════════════════
+   NORMALIZE ROW → standard fields
+═══════════════════════════════════════ */
+function normalizeRow(hdrs, cells, sheetMeta){
+  const get=(key)=>{
+    const i=findCol(hdrs,key);
+    return i>=0?(cells[i]||'').trim():'';
+  };
+  return {
+    _source:     sheetMeta.tag,      // 'EN' or 'TE'
+    _lang:       sheetMeta.lang,
+    _date:       get('submissionDate'),
+    _id:         get('submissionId'),
+    _unitPS:     get('unitPS'),
+    _gender:     get('gender'),
+    _category:   get('category'),
+    _remarks:    get('remarks'),
+    _psCode:     get('psCode'),
+    _raw:        cells,
+    _hdrs:       hdrs,
+  };
 }
 
-// Strip "_XXXXXXX" numeric code suffix
-// "Edulla Bayyaram_2025004" -> "Edulla Bayyaram"
-// "CID SomeBranch_2011001" -> "CID SomeBranch"
-function stripCode(val){
-  return (val||'').trim().replace(/_[0-9]+$/, '').trim();
-}
+/* ═══════════════════════════════════════
+   LOAD DATA — fetch both sheets & merge
+═══════════════════════════════════════ */
+async function loadData(){
+  setStatus('load','<span class="spinner"></span>English + Telugu sheets fetch అవుతున్నాయి…');
+  liveTag('loading','⏳ Connecting');
+  document.getElementById('instBox').style.display='none';
+  setProgress(0,'Starting...');
 
-// ── AUTO-DETECT UNIT NAMES from data ──
-// Logic: The numeric code pattern is "UnitName PSName_Code"
-// The code itself encodes the unit: first 4 digits = unit code
-// We group rows by their code-prefix and find common text prefixes
-let _unitMap = null; // cache: { "stripped_value": "UnitName" }
+  const merged=[];
+  const errors=[];
+  let enCount=0, teCount=0;
 
-function buildUnitMap(){
-  if(_unitMap) return _unitMap;
-  _unitMap = {};
-  const idx = colUnitPS();
-  if(idx < 0) return _unitMap;
+  for(let si=0;si<SHEETS.length;si++){
+    const sheet=SHEETS[si];
+    document.getElementById('overlayMsg').textContent=
+      `📡 ${sheet.lang} responses fetch అవుతున్నాయి… (${si+1}/${SHEETS.length})`;
+    setProgress((si/(SHEETS.length))*80, `Fetching ${sheet.lang}...`);
 
-  // Group all stripped values by their numeric code prefix (first 4 digits of code)
-  const codeGroups = {}; // { "2011": ["Adilabad Adilabad (R)", "Adilabad Boath", ...] }
-  allRows.forEach(r=>{
-    const raw = (r[idx]||'').trim();
-    const codeMatch = raw.match(/_([0-9]{4})[0-9]*/);
-    if(codeMatch){
-      const prefix = codeMatch[1];
-      const stripped = stripCode(raw);
-      if(!codeGroups[prefix]) codeGroups[prefix]=[];
-      codeGroups[prefix].push(stripped);
-    }
-  });
-
-  // For each code group, find the longest common prefix = Unit Name
-  Object.entries(codeGroups).forEach(([code, vals])=>{
-    if(vals.length === 0) return;
-    // Find common prefix among all values in this group
-    let common = vals[0];
-    for(let i=1;i<vals.length;i++){
-      while(vals[i].indexOf(common) !== 0){
-        common = common.substring(0, common.length-1);
-      }
-    }
-    common = common.trim();
-    // Remove trailing partial word (stop at last space)
-    if(common.length > 0 && common !== vals[0]){
-      const lastSpace = common.lastIndexOf(' ');
-      if(lastSpace > 0) common = common.substring(0, lastSpace).trim();
-    }
-    // Map every value in this group to this unit name (normalized)
-    vals.forEach(v=>{ _unitMap[v] = normalizeUnit(common || v); });
-  });
-
-  // Also apply KNOWN_UNITS as overrides for exact matches
-  allRows.forEach(r=>{
-    const raw = (r[idx]||'').trim();
-    const stripped = stripCode(raw);
-    for(const u of KNOWN_UNITS){
-      if(stripped.toLowerCase().startsWith(u.toLowerCase())){
-        _unitMap[stripped] = u;
-        break;
-      }
-    }
-  });
-
-  return _unitMap;
-}
-
-function extractUnit(val){
-  const stripped = stripCode(val);
-  // 1. Try KNOWN_UNITS first (handles multi-word units correctly)
-  for(const u of KNOWN_UNITS){
-    if(stripped.toLowerCase().startsWith(u.toLowerCase())) return u;
-  }
-  // 2. Try auto-detected unit map
-  const map = buildUnitMap();
-  if(map[stripped]) return normalizeUnit(map[stripped]);
-  // 3. Fallback: everything before the last space-word (PS name)
-  const parts = stripped.split(' ');
-  const raw = parts.length > 1 ? parts.slice(0,-1).join(' ').trim() : stripped;
-  return normalizeUnit(raw);
-}
-
-function extractPSFromUnit(val){
-  const stripped = stripCode(val);
-  // 1. Try KNOWN_UNITS
-  for(const u of KNOWN_UNITS){
-    if(stripped.toLowerCase().startsWith(u.toLowerCase())){
-      return stripped.substring(u.length).trim();
+    try{
+      const csv=await fetchSheet(sheet);
+      const lines=parseCSV(csv);
+      if(lines.length<2){errors.push(sheet.tag+': No data');continue;}
+      const hdrs=lines[0];
+      const rows=lines.slice(1).filter(r=>r.some(c=>c));
+      rows.forEach(cells=>{
+        const norm=normalizeRow(hdrs,cells,sheet);
+        merged.push(norm);
+      });
+      if(sheet.tag==='EN') enCount=rows.length;
+      else teCount=rows.length;
+    }catch(e){
+      errors.push(e.message);
     }
   }
-  // 2. Try auto-detected unit map
-  const map = buildUnitMap();
-  const unit = map[stripped];
-  if(unit && stripped.toLowerCase().startsWith(unit.toLowerCase())){
-    return stripped.substring(unit.length).trim();
-  }
-  // 3. Fallback: last word is PS
-  const parts = stripped.split(' ');
-  return parts.length > 1 ? parts[parts.length-1].trim() : '';
-}
 
-// Detect if "Name of the Unit" column has combined Unit+PS+Code values
-function isCombinedColumn(){
-  const idx = colUnitPS();
-  if(idx < 0) return false;
-  // Combined column values always have _NNNNN code pattern
-  const sample = allRows.slice(0,30).map(r=>(r[idx]||'').trim()).filter(Boolean);
-  return sample.some(v => /_[0-9]+$/.test(v));
-}
+  setProgress(90,'Merging data...');
+  document.getElementById('loadOverlay').style.display='none';
 
-// ── Unit Name Normalization Map ──
-// Converts sheet abbreviations/spacing variants to proper display names
-const UNIT_NORMALIZE = {
-  'c i d':'CID','c i':'CID','c.i.d':'CID','cid':'CID',
-  'c b cid':'CB CID','cb cid':'CB CID','cbcid':'CB CID',
-  's i t':'SIT','s o t':'SOT',
-  'a c b':'ACB','a r':'AR',
-  'g r p':'GRP','grp secunderabad':'GRP Secunderabad',
-  'she teams':'SHE Teams','s h e':'SHE Teams',
-  'future city':'Future City',
-  'dgpr':'DGPR','d g p r':'DGPR',
-  'ptc':'PTC','p t c':'PTC',
-};
-
-function normalizeUnit(name){
-  if(!name) return name;
-  const key = name.trim().toLowerCase();
-  return UNIT_NORMALIZE[key] || name;
-}
-
-function cleanPS(val){ return stripCode(val); }
-
-// ── Called once on load: populate Unit & Category dropdowns ──
-function buildFilters(){
-  const ui      = colUnit();
-  const ci2     = ci(['type of cat','category']);
-  const combined= isCombinedColumn();
-
-  const hdrDebug=document.getElementById('headerDebug');
-  if(hdrDebug) hdrDebug.style.display='none';
-
-  // Unit Dropdown — all unique units from all rows
-  const selUnit=document.getElementById('fUnit');
-  while(selUnit.options.length>1) selUnit.remove(1);
-  if(ui>=0){
-    const unitVals=[...new Set(allRows.map(r=>
-      combined ? extractUnit((r[ui]||'').trim()) : (r[ui]||'').trim()
-    ).filter(Boolean))].sort();
-    unitVals.forEach(v=>selUnit.add(new Option(v,v)));
+  if(merged.length===0){
+    setStatus('err','❌ రెండు sheets ని access చేయలేకపోయాం! Publish to web చేయండి.\n'+errors.join(' | '));
+    liveTag('off','✖ Offline');
+    document.getElementById('instBox').style.display='block';
+    return;
   }
 
-  // Category Dropdown — all unique categories
-  const selCat=document.getElementById('fCat');
-  while(selCat.options.length>1) selCat.remove(1);
-  if(ci2>=0){
-    [...new Set(allRows.map(r=>(r[ci2]||'').trim()).filter(Boolean))].sort()
-      .forEach(v=>selCat.add(new Option(v,v)));
-  }
+  allRows=merged;
+  _unitMap=null;
 
-  // PS dropdown — initially all PS names
-  updatePSDropdown('');
-}
+  // Update counts
+  document.getElementById('enCount').textContent=`EN: ${enCount.toLocaleString()}`;
+  document.getElementById('teCount').textContent=`TE: ${teCount.toLocaleString()}`;
 
-// ── Update PS dropdown based on selected unit (cascading) ──
-function updatePSDropdown(selectedUnit){
-  const ui      = colUnit();
-  const pi      = colPS();
-  const combined= isCombinedColumn();
-  const selPS   = document.getElementById('fPS');
-  const prevPS  = selPS.value; // remember current selection
-  while(selPS.options.length>1) selPS.remove(1);
-
-  let sourceRows = selectedUnit
-    ? allRows.filter(r => {
-        const raw=(r[ui>=0?ui:0]||'').trim();
-        return (combined ? extractUnit(raw) : raw) === selectedUnit;
-      })
-    : allRows;
-
-  let psVals;
-  if(combined && ui>=0){
-    psVals=[...new Set(sourceRows.map(r=>extractPSFromUnit((r[ui]||'').trim())).filter(v=>v&&v.length>0))].sort();
-  } else if(pi>=0){
-    psVals=[...new Set(sourceRows.map(r=>stripCode((r[pi]||'').trim())).filter(Boolean))].sort();
+  if(errors.length){
+    setStatus('ok',`⚠️ Partial load: ${merged.length.toLocaleString()} records. Issues: ${errors.join(' | ')}`);
   } else {
-    psVals=[];
+    setStatus('ok',`✅ ${merged.length.toLocaleString()} records loaded (EN: ${enCount.toLocaleString()} + TE: ${teCount.toLocaleString()}) — Auto-refresh: 60s`);
   }
-  psVals.forEach(v=>selPS.add(new Option(v,v)));
+  liveTag('on','● LIVE');
+  document.getElementById('updTime').textContent='Updated: '+new Date().toLocaleTimeString();
 
-  // Restore previous selection if still valid, else reset
-  if(psVals.includes(prevPS)) selPS.value=prevPS;
-  else selPS.value='';
-}
+  setProgress(100,'Done!');
+  setTimeout(()=>{ document.getElementById('loadProgress').style.display='none'; },1000);
 
-// ── Called when Unit dropdown changes ──
-function onUnitChange(){
-  const selectedUnit=document.getElementById('fUnit').value;
-  updatePSDropdown(selectedUnit); // cascade PS
+  buildFilters();
   applyFilters();
 }
 
-function applyFilters(){
-  const u  = document.getElementById('fUnit').value;
-  const p  = document.getElementById('fPS').value;
-  const c  = document.getElementById('fCat').value;
-  const df = document.getElementById('fFrom').value;
-  const dt = document.getElementById('fTo').value;
+function setProgress(pct, label){
+  const el=document.getElementById('loadProgress');
+  el.style.display='block';
+  document.getElementById('progFill').style.width=pct+'%';
+  document.getElementById('progLabel').textContent=label;
+  document.getElementById('progPct').textContent=Math.round(pct)+'%';
+}
 
-  const ui      = colUnit();
-  const pi      = colPS();
-  const ci2     = ci(['type of cat','category']);
-  const di      = ci(['submission date','date']);
-  const combined= isCombinedColumn();
+/* ═══════════════════════════════════════
+   GET UNIT MAP (cached)
+═══════════════════════════════════════ */
+function getUnitMap(){
+  if(!_unitMap) _unitMap=buildUnitMap(allRows);
+  return _unitMap;
+}
+
+/* ═══════════════════════════════════════
+   FILTERS
+═══════════════════════════════════════ */
+function buildFilters(){
+  const combined=isCombined(allRows);
+  const umap=getUnitMap();
+
+  // Units
+  const selUnit=document.getElementById('fUnit');
+  while(selUnit.options.length>1) selUnit.remove(1);
+  const unitVals=[...new Set(allRows.map(r=>{
+    const raw=r._unitPS;
+    return extractUnit(raw,umap);
+  }).filter(Boolean))].sort();
+  unitVals.forEach(v=>selUnit.add(new Option(v,v)));
+
+  // Categories
+  const selCat=document.getElementById('fCat');
+  while(selCat.options.length>1) selCat.remove(1);
+  const catVals=[...new Set(allRows.map(r=>normalizeCat(r._category)).filter(Boolean))].sort();
+  catVals.forEach(v=>selCat.add(new Option(v,v)));
+
+  updatePSDropdown('');
+}
+
+function updatePSDropdown(selectedUnit){
+  const combined=isCombined(allRows);
+  const umap=getUnitMap();
+  const selPS=document.getElementById('fPS');
+  const prev=selPS.value;
+  while(selPS.options.length>1) selPS.remove(1);
+
+  const src=selectedUnit
+    ? allRows.filter(r=>extractUnit(r._unitPS,umap)===selectedUnit)
+    : allRows;
+
+  const psVals=[...new Set(src.map(r=>{
+    return extractPS(r._unitPS,umap);
+  }).filter(v=>v&&v.length>0))].sort();
+  psVals.forEach(v=>selPS.add(new Option(v,v)));
+  selPS.value=psVals.includes(prev)?prev:'';
+}
+
+function clearDates(){
+  document.getElementById('fFrom').value='';
+  document.getElementById('fTo').value='';
+  applyFilters();
+}
+function onUnitChange(){
+  updatePSDropdown(document.getElementById('fUnit').value);
+  applyFilters();
+}
+
+// ── Robust date parser: handles multiple formats from sheet ──
+function parseSheetDate(str){
+  if(!str) return null;
+  const s = str.trim();
+  // Try native parse first
+  let d = new Date(s);
+  if(!isNaN(d.getTime())) return d;
+  // Try DD/MM/YYYY or DD-MM-YYYY
+  let m = s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})/);
+  if(m){
+    d = new Date(+m[3], +m[2]-1, +m[1]);
+    if(!isNaN(d.getTime())) return d;
+  }
+  // Try "Jan 6 2026" style (already handled by native parse above)
+  return null;
+}
+
+function applyFilters(){
+  const u   =document.getElementById('fUnit').value;
+  const p   =document.getElementById('fPS').value;
+  const c   =document.getElementById('fCat').value;
+  const df  =document.getElementById('fFrom').value;
+  const dt  =document.getElementById('fTo').value;
+  const chkEN=document.getElementById('chkEN').checked;
+  const chkTE=document.getElementById('chkTE').checked;
+  const combined=isCombined(allRows);
+  const umap=getUnitMap();
+
+  // Pre-parse filter boundary dates (date-only, ignore time)
+  const dfDate = df ? new Date(df+'T00:00:00') : null;
+  const dtDate = dt ? new Date(dt+'T23:59:59') : null;
 
   filtered=allRows.filter(r=>{
-    // Unit filter
-    if(u && ui>=0){
-      const rowUnit=combined?extractUnit((r[ui]||'').trim()):(r[ui]||'').trim();
+    // Source filter
+    if(!chkEN && r._source==='EN') return false;
+    if(!chkTE && r._source==='TE') return false;
+    // Unit
+    if(u){
+      const rowUnit=extractUnit(r._unitPS,umap);
       if(rowUnit!==u) return false;
     }
-    // PS filter
+    // PS
     if(p){
-      let rowPS;
-      if(combined && ui>=0) rowPS=extractPSFromUnit((r[ui]||'').trim());
-      else if(pi>=0)         rowPS=stripCode((r[pi]||'').trim());
+      const rowPS=extractPS(r._unitPS,umap);
       if(rowPS!==p) return false;
     }
-    // Category filter
-    if(c && ci2>=0 && !(r[ci2]||'').toLowerCase().includes(c.toLowerCase())) return false;
-    // Date filter
-    if((df||dt) && di>=0){
-      const d=new Date(r[di]);
-      if(df && d<new Date(df)) return false;
-      if(dt && d>new Date(dt)) return false;
+    // Category
+    if(c && normalizeCat(r._category)!==c) return false;
+    // Date — only filter if user actually picked a date
+    if(dfDate || dtDate){
+      const d = parseSheetDate(r._date);
+      if(!d) return true; // can't parse row date — don't exclude it
+      if(dfDate && d < dfDate) return false;
+      if(dtDate && d > dtDate) return false;
     }
     return true;
   });
 
   page=1;
   document.getElementById('totalCount').textContent=filtered.length.toLocaleString();
+
+  // Update EN/TE badges to reflect FILTERED counts
+  const enFiltered = filtered.filter(r=>r._source==='EN').length;
+  const teFiltered = filtered.filter(r=>r._source==='TE').length;
+  document.getElementById('enCount').textContent = `EN: ${enFiltered.toLocaleString()}`;
+  document.getElementById('teCount').textContent = `TE: ${teFiltered.toLocaleString()}`;
+
   renderStats();renderCharts();renderTable();
 }
 
+/* ═══════════════════════════════════════
+   CATEGORY NORMALIZATION
+═══════════════════════════════════════ */
+const CAT_GROUPS=[
+  {label:'Petition',              keys:['petition','పిటిషన్','పిటీషన్']},
+  {label:'Other Services',        keys:['other service','ఇతర సేవలు','ఇతర సేవ']},
+  {label:'Passport Verification', keys:['passport','పాస్పోర్ట్','పాస్‌పోర్ట్']},
+  {label:'On Site FIR',           keys:['on site fir','on-site fir','onsite fir','ఆన్ సైట్','సైట్‌లో']},
+  {label:'FIR',                   keys:['fir','ఎఫ్‌ఐఆర్','ఎఫ్ఐఆర్','f.i.r']},
+  {label:'e-Challan',             keys:['challan','ఈ-చలాన్','ఈచలాన్','ఈ చలాన్']},
+  {label:'Complaint',             keys:['complaint','ఫిర్యాదు']},
+  {label:'Women Safety',          keys:['women safety','మహిళా భద్రత']},
+  {label:'Cyber Crime',           keys:['cyber','సైబర్']},
+  {label:'Traffic',               keys:['traffic','ట్రాఫిక్']},
+];
+
+function normalizeCat(raw){
+  if(!raw) return '';
+  const vl=raw.toLowerCase().trim();
+  for(const g of CAT_GROUPS){
+    for(const k of g.keys){
+      if(vl.includes(k.toLowerCase())) return g.label;
+    }
+  }
+  return raw;
+}
+
+/* ═══════════════════════════════════════
+   GENDER NORMALIZATION
+═══════════════════════════════════════ */
+const MALE_KEYS  =['male','పురుషుడు','man','purushud','మగ'];
+const FEMALE_KEYS=['female','స్త్రీ','woman','stree','ఆడ','స్త్రి'];
+const TRANS_KEYS =['transgender','థర్డ్ జెండర్','third gender','trans','తృతీయ','hijra'];
+
+function genderBucket(val){
+  const vl=normSpace(val).toLowerCase();
+  if(MALE_KEYS.some(k=>vl.includes(k)))   return 'Male';
+  if(FEMALE_KEYS.some(k=>vl.includes(k))) return 'Female';
+  if(TRANS_KEYS.some(k=>vl.includes(k)))  return 'Transgender';
+  return '__other__';
+}
+
+/* ═══════════════════════════════════════
+   STATS
+═══════════════════════════════════════ */
 function renderStats(){
-  const ci2=ci(['type of cat','category']);const cats={};
-  if(ci2>=0)filtered.forEach(r=>{const v=r[ci2]||'Other';cats[v]=(cats[v]||0)+1;});
+  const cats={};
+  filtered.forEach(r=>{const v=normalizeCat(r._category)||'Other';cats[v]=(cats[v]||0)+1;});
   const top5=Object.entries(cats).sort((a,b)=>b[1]-a[1]).slice(0,5);
   const clrs=['#c0392b','#8e44ad','#1a6bb5','#27ae60','#e67e22'];
   let h=`<div class="stat-box"><div class="sv">${filtered.length.toLocaleString()}</div><div class="sk">Total</div></div>`;
@@ -517,248 +656,155 @@ function renderStats(){
   document.getElementById('statsRow').innerHTML=h;
 }
 
-function countBy(idx){const m={};filtered.forEach(r=>{const v=(r[idx]||'Unknown').trim();m[v]=(m[v]||0)+1;});return m;}
+/* ═══════════════════════════════════════
+   CHARTS
+═══════════════════════════════════════ */
 function mk(id,type,labels,data,opts={}){
   if(charts[id]){charts[id].destroy();delete charts[id];}
-  charts[id]=new Chart(document.getElementById(id),{type,data:{labels,datasets:[{data,...opts}]},
-    options:{responsive:true,plugins:{legend:opts.legend||{display:false},
-      tooltip:{callbacks:{label:c=>{const v=c.parsed?.y??c.parsed?.x??c.parsed;return(typeof v==='number'?v:0).toLocaleString();}}}
-    },...(opts.extra||{})}});
+  charts[id]=new Chart(document.getElementById(id),{
+    type,
+    data:{labels,datasets:[{data,...opts}]},
+    options:{responsive:true,plugins:{
+      legend:opts.legend||{display:false},
+      tooltip:{callbacks:{label:c=>{
+        const v=c.parsed?.y??c.parsed?.x??c.parsed;
+        return (typeof v==='number'?v:0).toLocaleString();
+      }}}
+    },...(opts.extra||{})}
+  });
 }
-function renderCharts(){renderUnit();renderGender();renderCat();renderLang();}
+
+function renderCharts(){ renderUnit(); renderGender(); renderCat(); renderLang(); }
+
 function renderUnit(){
-  const idx=colUnit();if(idx<0)return;
-  const combined=isCombinedColumn();
-  // Count by extracted unit name
+  const combined=isCombined(allRows);
+  const umap=getUnitMap();
   const m={};
   filtered.forEach(r=>{
-    const raw=(r[idx]||'').trim();
-    const unit=combined?extractUnit(raw):raw;
+    const unit=extractUnit(r._unitPS,umap);
     if(unit) m[unit]=(m[unit]||0)+1;
   });
   const s=Object.entries(m).sort((a,b)=>b[1]-a[1]);
-  mk('cUnit','bar',s.map(x=>x[0]),s.map(x=>x[1]),{backgroundColor:'#2e7d32',borderRadius:3,
-    extra:{scales:{x:{ticks:{font:{size:9},maxRotation:65},grid:{display:false}},y:{beginAtZero:true}}}});
+  mk('cUnit','bar',s.map(x=>x[0]),s.map(x=>x[1]),{
+    backgroundColor:'#2e7d32',borderRadius:3,
+    extra:{scales:{x:{ticks:{font:{size:9},maxRotation:65},grid:{display:false}},y:{beginAtZero:true}}}
+  });
 }
+
 function renderGender(){
-  const idx=ci(['gender','sex','లింగం','gender ']);
-  const dbg=document.getElementById('genderDebug');
-
-  if(idx<0){
-    // Column not found — show hardcoded known values
-    dbg.style.display='none';
-    dbg.innerHTML='⚠️ Gender column sheet లో కనపడలేదు. Column header చెక్ చేయండి.';
-    mk('cGender','bar',['Male','Female','Transgender'],[17182,5792,32],{
-      backgroundColor:['#1565c0','#ad1457','#ff6f00'],borderRadius:4,
-      extra:{scales:{x:{ticks:{font:{size:12}}},y:{beginAtZero:true}}}});
-    return;
-  }
-
-  // ── STEP 1: Collect all unique raw values from sheet ──
-  const rawMap={};
+  const counts={Male:0,Female:0,Transgender:0,Unknown:0};
+  const unmatchedSamples={};
   filtered.forEach(r=>{
-    const raw=(r[idx]||'').trim();
-    if(raw) rawMap[raw]=(rawMap[raw]||0)+1;
+    const b=genderBucket(r._gender);
+    counts[b==='__other__'?'Unknown':b]++;
+    if(b==='__other__'){
+      const raw=(r._gender||'').trim();
+      unmatchedSamples[raw]=(unmatchedSamples[raw]||0)+1;
+    }
   });
 
-  // ── STEP 2: Exact match lists (user-confirmed values) ──
-  const MALE_EXACT   = ['Male','పురుషుడు','male','MALE','Man','man','Purushud','purushud'];
-  const FEMALE_EXACT = ['Female','స్త్రీ','female','FEMALE','Woman','woman','Stree','stree'];
-  const TRANS_EXACT  = ['Transgender','థర్డ్ జెండర్','Third Gender','third gender',
-                        'TRANSGENDER','transgender','Trans','trans','తృతీయలింగం'];
-
-  // ── STEP 3: Bucket function — exact first, then partial ──
-  function bucket(raw){
-    const v=raw.trim();
-    if(MALE_EXACT.indexOf(v)>=0)   return 'Male';
-    if(FEMALE_EXACT.indexOf(v)>=0) return 'Female';
-    if(TRANS_EXACT.indexOf(v)>=0)  return 'Transgender';
-    // Partial fallback
-    const vl=v.toLowerCase();
-    if(vl.includes('male')||vl.includes('పురుష')||vl.includes('man'))   return 'Male';
-    if(vl.includes('female')||vl.includes('స్త్రీ')||vl.includes('స్త్రి')||vl.includes('woman')) return 'Female';
-    if(vl.includes('trans')||vl.includes('థర్డ్')||vl.includes('third')||vl.includes('తృతీయ'))   return 'Transgender';
-    return '__unmatched__';
+  // TEMP DEBUG — show unmatched gender values
+  const gdbg=document.getElementById('genderDebugBox');
+  if(gdbg && Object.keys(unmatchedSamples).length>0){
+    gdbg.style.display='block';
+    gdbg.innerHTML='<b>🔍 DEBUG — Gender values NOT matched (Unknown bucket):</b><br>'+
+      Object.entries(unmatchedSamples).sort((a,b)=>b[1]-a[1]).slice(0,20)
+        .map(([k,v])=>`"<b>${k}</b>" (${v.toLocaleString()} times, length=${k.length})`)
+        .join(' &nbsp;|&nbsp; ');
+  } else if(gdbg){
+    gdbg.style.display='none';
   }
 
-  // ── STEP 4: Count into 3 buckets ──
-  const counts={Male:0,Female:0,Transgender:0};
-  const unmatched={};
-  Object.entries(rawMap).forEach(([raw,cnt])=>{
-    const b=bucket(raw);
-    if(b==='__unmatched__') unmatched[raw]=cnt;
-    else counts[b]+=cnt;
-  });
-
-  // ── STEP 5: Always show debug — all unique values + any unmatched ──
-  let debugHTML='<b>📋 Sheet లో Gender Column Unique Values:</b><br>';
-  debugHTML+=Object.entries(rawMap)
-    .sort((a,b)=>b[1]-a[1])
-    .map(([k,v])=>{
-      const b=bucket(k);
-      const color=b==='Male'?'#1565c0':b==='Female'?'#ad1457':b==='Transgender'?'#ff6f00':'#c0392b';
-      return `<span style="color:${color};font-weight:700">"${k}"</span> → ${v.toLocaleString()} [${b==='__unmatched__'?'❌ No match':b}]`;
-    }).join(' &nbsp;|&nbsp; ');
-
-  if(Object.keys(unmatched).length>0){
-    debugHTML+='<br><b style="color:#c0392b">❌ Match కాలేదు — ఈ values చెప్పండి, fix చేస్తా: </b>'+
-      Object.entries(unmatched).map(([k,v])=>`"${k}"(${v})`).join(', ');
-  }
-  dbg.style.display='none';
-  dbg.innerHTML=debugHTML;
-
-  // ── STEP 6: Draw chart ──
   const labels=['Male','Female','Transgender'];
   const data=[counts.Male,counts.Female,counts.Transgender];
   const colors=['#1565c0','#ad1457','#ff6f00'];
-
-  mk('cGender','bar',labels,data,{
-    backgroundColor:colors,
-    borderRadius:5,
-    extra:{
-      plugins:{
-        legend:{display:false},
-        tooltip:{callbacks:{
-          label:c=>`${labels[c.dataIndex]}: ${c.parsed.y.toLocaleString()}`
-        }}
-      },
-      scales:{
-        x:{ticks:{font:{size:13,weight:'bold'},color:'#222'}},
-        y:{beginAtZero:true,ticks:{font:{size:10}},
-           title:{display:true,text:'Count',font:{size:11}}}
-      }
-    }
-  });
-}
-function renderCat(){
-  const idx=ci(['type of cat','category','విభాగం','కేటగిరీ']);
-  const dbg=document.getElementById('catDebug');
-  if(idx<0){if(dbg){dbg.style.display='none';dbg.innerHTML='⚠️ Category column కనపడలేదు.';}return;}
-
-  // Known Category Groups — English + Telugu aliases
-  const CAT_GROUPS=[
-    {label:'Petition',          keys:['petition','పిటిషన్','పిటీషన్']},
-    {label:'Other Services',    keys:['other service','ఇతర సేవలు','ఇతర సేవ']},
-    {label:'Passport Verification', keys:['passport','పాస్‌పోర్ట్','పాస్పోర్ట్']},
-    {label:'On Site FIR',       keys:['on site fir','on-site fir','onsite fir','సైట్‌లో ఎఫ్ఐఆర్','ఆన్ సైట్']},
-    {label:'FIR',               keys:['fir','ఎఫ్‌ఐఆర్','ఎఫ్ఐఆర్','f.i.r']},
-    {label:'e-Challan',         keys:['challan','ఈ-చలాన్','ఈచలాన్','ఈ చలాన్']},
-    {label:'Complaint',         keys:['complaint','ఫిర్యాదు']},
-    {label:'Women Safety',      keys:['women safety','మహిళా భద్రత']},
-    {label:'Cyber Crime',       keys:['cyber','సైబర్']},
-    {label:'Traffic',           keys:['traffic','ట్రాఫిక్']},
-  ];
-
-  // Collect unique raw values
-  const rawMap={};
-  filtered.forEach(r=>{
-    const raw=(r[idx]||'').trim();
-    if(raw) rawMap[raw]=(rawMap[raw]||0)+1;
-  });
-
-  // Bucket function — check each group's keys
-  function bucketCat(raw){
-    const vl=raw.toLowerCase().trim();
-    for(const g of CAT_GROUPS){
-      for(const k of g.keys){
-        if(vl.includes(k.toLowerCase())) return g.label;
-      }
-    }
-    return raw; // keep original if no match
+  if(counts.Unknown>0){
+    labels.push('Unknown');
+    data.push(counts.Unknown);
+    colors.push('#7f8c8d');
   }
-
-  // Aggregate
-  const counts={};
-  Object.entries(rawMap).forEach(([raw,cnt])=>{
-    const b=bucketCat(raw);
-    counts[b]=(counts[b]||0)+cnt;
-  });
-
-  // Debug box
-  if(dbg){
-    let html='<b>📋 Category Unique Values (how they are grouped):</b><br>';
-    html+=Object.entries(rawMap).sort((a,b)=>b[1]-a[1])
-      .map(([k,v])=>`<span style="font-weight:700">"${k}"</span> → ${v.toLocaleString()} [➜ <b>${bucketCat(k)}</b>]`)
-      .join(' &nbsp;|&nbsp; ');
-    dbg.style.display='none';
-    dbg.innerHTML=html;
-  }
-
-  // Draw chart
-  const sorted=Object.entries(counts).sort((a,b)=>b[1]-a[1]);
-  const palette=['#e91e63','#9c27b0','#3f51b5','#0097a7','#4caf50','#ff9800','#f44336','#795548','#00838f','#558b2f'];
-  mk('cCat','bar',
-    sorted.map(x=>x[0]),
-    sorted.map(x=>x[1]),
-    {
-      backgroundColor:sorted.map((_,i)=>palette[i%palette.length]),
-      borderRadius:4,
-      extra:{
-        indexAxis:'y',
-        plugins:{legend:{display:false},
-          tooltip:{callbacks:{label:c=>`${sorted[c.dataIndex][0]}: ${c.parsed.x.toLocaleString()}`}}
-        },
-        scales:{
-          x:{beginAtZero:true,ticks:{font:{size:10}}},
-          y:{ticks:{font:{size:10}}}
-        }
-      }
-    }
+  mk('cGender','bar',
+    labels,
+    data,
+    {backgroundColor:colors,borderRadius:5,
+      extra:{scales:{x:{ticks:{font:{size:12,weight:'bold'}}},y:{beginAtZero:true}}}}
   );
 }
-function renderLang(){
-  const idx=ci(['language','lang']);
-  const entries=idx>=0?Object.entries(countBy(idx)):[['Telugu',Math.round(filtered.length*.61)],['English',filtered.length-Math.round(filtered.length*.61)]];
-  mk('cLang','doughnut',entries.map(x=>x[0]),entries.map(x=>x[1]),{backgroundColor:['#1565c0','#e65100','#27ae60','#8e44ad'],borderWidth:4,borderColor:'#fff',hoverOffset:8,
-    legend:{position:'bottom',labels:{font:{size:12},padding:12}}});
+
+function renderCat(){
+  const counts={};
+  filtered.forEach(r=>{
+    const c=normalizeCat(r._category)||'Other';
+    counts[c]=(counts[c]||0)+1;
+  });
+  const sorted=Object.entries(counts).sort((a,b)=>b[1]-a[1]);
+  const palette=['#e91e63','#9c27b0','#3f51b5','#0097a7','#4caf50','#ff9800','#f44336','#795548','#00838f','#558b2f'];
+  mk('cCat','bar',sorted.map(x=>x[0]),sorted.map(x=>x[1]),{
+    backgroundColor:sorted.map((_,i)=>palette[i%palette.length]),borderRadius:4,
+    extra:{indexAxis:'y',scales:{x:{beginAtZero:true},y:{ticks:{font:{size:9}}}}}
+  });
 }
 
+function renderLang(){
+  const m={English:0,Telugu:0};
+  filtered.forEach(r=>{ if(r._lang==='English') m.English++; else m.Telugu++; });
+  mk('cLang','doughnut',
+    ['English','Telugu'],
+    [m.English,m.Telugu],
+    {backgroundColor:['#1565c0','#e65100'],borderWidth:4,borderColor:'#fff',hoverOffset:8,
+      legend:{position:'bottom',labels:{font:{size:13},padding:12}}}
+  );
+}
+
+/* ═══════════════════════════════════════
+   TABLE
+═══════════════════════════════════════ */
 function renderTable(){
   const s=(page-1)*PAGE_SIZE, sl=filtered.slice(s,s+PAGE_SIZE), tot=filtered.length;
-  const ui       = colUnit();
-  const combined = isCombinedColumn();
+  const combined=isCombined(allRows);
+  const umap=getUnitMap();
 
-  // Build custom headers — split "Name of the Unit & PS" into two columns
-  let headHTML = '<tr><th>#</th>';
-  headers.forEach((h,j)=>{
-    if(j===ui && combined){
-      headHTML += '<th>Name of the Unit</th><th>PS Name</th>';
-    } else {
-      headHTML += `<th>${h}</th>`;
-    }
-  });
-  headHTML += '</tr>';
-  document.getElementById('tHead').innerHTML = headHTML;
+  document.getElementById('tHead').innerHTML=`<tr>
+    <th>#</th><th>Source</th><th>Date</th>
+    <th>Name of the Unit</th><th>PS Name</th>
+    <th>Gender</th><th>Category</th><th>Remarks</th>
+  </tr>`;
 
-  // Build rows — split combined column into Unit + PS cells
-  const bodyHTML = sl.map((r,i)=>{
-    let row = `<tr><td>${s+i+1}</td>`;
-    headers.forEach((_,j)=>{
-      const val = (r[j]||'').trim();
-      if(j===ui && combined){
-        const unit = extractUnit(val);
-        const ps   = extractPSFromUnit(val);
-        row += `<td title="${unit}">${unit}</td><td title="${ps}">${ps}</td>`;
-      } else {
-        row += `<td title="${val.replace(/"/g,'')}">${val}</td>`;
-      }
-    });
-    row += '</tr>';
-    return row;
+  document.getElementById('tBody').innerHTML=sl.map((r,i)=>{
+    const unit=extractUnit(r._unitPS,umap);
+    const ps  =extractPS(r._unitPS,umap);
+    const cat =normalizeCat(r._category);
+    return `<tr>
+      <td>${s+i+1}</td>
+      <td><span class="src-tag ${r._source.toLowerCase()}">${r._source}</span></td>
+      <td>${r._date}</td>
+      <td title="${unit}">${unit}</td>
+      <td title="${ps}">${ps}</td>
+      <td>${r._gender}</td>
+      <td title="${cat}">${cat}</td>
+      <td title="${r._remarks}">${r._remarks}</td>
+    </tr>`;
   }).join('');
 
-  document.getElementById('tBody').innerHTML = bodyHTML;
   document.getElementById('tblCount').textContent=`${tot.toLocaleString()} records`;
   document.getElementById('pageInfo').textContent=`Page ${page} / ${Math.max(1,Math.ceil(tot/PAGE_SIZE))}`;
   document.getElementById('btnPrev').disabled=page<=1;
   document.getElementById('btnNext').disabled=page>=Math.ceil(tot/PAGE_SIZE);
 }
+
 function goPage(d){page+=d;renderTable();document.querySelector('.tbl-wrap').scrollIntoView({behavior:'smooth'});}
 function setStatus(t,msg){const e=document.getElementById('statusBar');e.className=t==='ok'?'s-ok':t==='err'?'s-err':'s-load';e.innerHTML=msg;}
 function liveTag(cls,txt){const e=document.getElementById('liveTag');e.className='live '+cls;e.textContent=txt;}
 
+/* ═══════════════════════════════════════
+   BOOT
+═══════════════════════════════════════ */
+// Safety: clear any browser-autofilled date values on load
+document.getElementById('fFrom').value='';
+document.getElementById('fTo').value='';
+
 loadData();
-setInterval(loadData,60000);
+setInterval(loadData, 60000);
 </script>
 </body>
 </html>
