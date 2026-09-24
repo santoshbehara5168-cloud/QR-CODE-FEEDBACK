@@ -133,7 +133,7 @@ tbody td{padding:6px 10px;border-bottom:1px solid #e0e0e0;white-space:nowrap;max
   <span class="upd" id="updTime"></span>
 </div>
 
-<div id="genderDebugBox" style="display:none;margin:0 10px 10px;padding:10px 14px;background:#fff3cd;border:2px solid #f39c12;border-radius:8px;font-size:12px;color:#856404;line-height:2"></div>
+
 
 <div class="stats-row" id="statsRow"></div>
 
@@ -168,13 +168,13 @@ tbody td{padding:6px 10px;border-bottom:1px solid #e0e0e0;white-space:nowrap;max
 const SHEETS = [
   {
     id: '1RkFTwCMnFcQeK4xMSVrWFGg4nGIUBUeWHGWjN1BdrXU',
-    gid: '476498584',
+    gid: '1726975922',
     lang: 'English',
     tag: 'EN'
   },
   {
     id: '1snVV_JRChE9_PNa3KJUXNlK0a9IwaoSlLwtiNXIOOWk',
-    gid: '271327414',
+    gid: '426048500',
     lang: 'Telugu',
     tag: 'TE'
   }
@@ -352,10 +352,13 @@ function parseCSV(raw){
 ═══════════════════════════════════════ */
 async function fetchSheet(sheet){
   const t='&nocache='+Date.now();
+  // IMPORTANT: every URL below MUST include gid=${sheet.gid}.
+  // A fallback URL without gid would silently fetch the DEFAULT/first tab
+  // of the spreadsheet instead of the intended "Main En"/"Main Te" tab —
+  // this was the root cause of wildly inflated totals (213,393 instead of ~61,617).
   const urls=[
-    `https://docs.google.com/spreadsheets/d/${sheet.id}/gviz/tq?tqx=out:csv&gid=${sheet.gid}${t}`,
     `https://docs.google.com/spreadsheets/d/${sheet.id}/export?format=csv&gid=${sheet.gid}${t}`,
-    `https://docs.google.com/spreadsheets/d/${sheet.id}/gviz/tq?tqx=out:csv${t}`,
+    `https://docs.google.com/spreadsheets/d/${sheet.id}/gviz/tq?tqx=out:csv&gid=${sheet.gid}${t}`,
   ];
   let lastErr='';
   for(const url of urls){
@@ -368,7 +371,7 @@ async function fetchSheet(sheet){
       return txt;
     }catch(e){lastErr=e.message;}
   }
-  throw new Error(sheet.tag+' sheet: '+lastErr);
+  throw new Error(sheet.tag+' sheet (gid='+sheet.gid+'): '+lastErr);
 }
 
 /* ═══════════════════════════════════════
@@ -419,6 +422,7 @@ async function loadData(){
       if(lines.length<2){errors.push(sheet.tag+': No data');continue;}
       const hdrs=lines[0];
       const rows=lines.slice(1).filter(r=>r.some(c=>c));
+
       rows.forEach(cells=>{
         const norm=normalizeRow(hdrs,cells,sheet);
         merged.push(norm);
@@ -667,8 +671,9 @@ function mk(id,type,labels,data,opts={}){
     options:{responsive:true,plugins:{
       legend:opts.legend||{display:false},
       tooltip:{callbacks:{label:c=>{
-        const v=c.parsed?.y??c.parsed?.x??c.parsed;
-        return (typeof v==='number'?v:0).toLocaleString();
+        // c.raw is always the actual data value regardless of chart orientation (fixes horizontal bar charts showing index instead of value)
+        const v = typeof c.raw==='number' ? c.raw : parseFloat(c.raw);
+        return (isNaN(v)?0:v).toLocaleString();
       }}}
     },...(opts.extra||{})}
   });
@@ -693,27 +698,10 @@ function renderUnit(){
 
 function renderGender(){
   const counts={Male:0,Female:0,Transgender:0,Unknown:0};
-  const unmatchedSamples={};
   filtered.forEach(r=>{
     const b=genderBucket(r._gender);
     counts[b==='__other__'?'Unknown':b]++;
-    if(b==='__other__'){
-      const raw=(r._gender||'').trim();
-      unmatchedSamples[raw]=(unmatchedSamples[raw]||0)+1;
-    }
   });
-
-  // TEMP DEBUG — show unmatched gender values
-  const gdbg=document.getElementById('genderDebugBox');
-  if(gdbg && Object.keys(unmatchedSamples).length>0){
-    gdbg.style.display='block';
-    gdbg.innerHTML='<b>🔍 DEBUG — Gender values NOT matched (Unknown bucket):</b><br>'+
-      Object.entries(unmatchedSamples).sort((a,b)=>b[1]-a[1]).slice(0,20)
-        .map(([k,v])=>`"<b>${k}</b>" (${v.toLocaleString()} times, length=${k.length})`)
-        .join(' &nbsp;|&nbsp; ');
-  } else if(gdbg){
-    gdbg.style.display='none';
-  }
 
   const labels=['Male','Female','Transgender'];
   const data=[counts.Male,counts.Female,counts.Transgender];
@@ -734,9 +722,11 @@ function renderGender(){
 function renderCat(){
   const counts={};
   filtered.forEach(r=>{
-    const c=normalizeCat(r._category)||'Other';
+    const raw=(r._category||'').trim();
+    const c=normalizeCat(raw)||'Other';
     counts[c]=(counts[c]||0)+1;
   });
+
   const sorted=Object.entries(counts).sort((a,b)=>b[1]-a[1]);
   const palette=['#e91e63','#9c27b0','#3f51b5','#0097a7','#4caf50','#ff9800','#f44336','#795548','#00838f','#558b2f'];
   mk('cCat','bar',sorted.map(x=>x[0]),sorted.map(x=>x[1]),{
