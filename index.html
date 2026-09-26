@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>QR Code Feedback Dashboard 2026</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',Arial,sans-serif}
 body{background:#dde1f0;min-height:100vh;padding-bottom:30px}
@@ -151,7 +152,10 @@ tbody td{padding:6px 10px;border-bottom:1px solid #e0e0e0;white-space:nowrap;max
 <div class="tbl-wrap">
   <div class="tbl-head">
     <h3>📋 Feedback Records</h3>
-    <span id="tblCount" style="font-size:12px;font-weight:400"></span>
+    <div style="display:flex;align-items:center;gap:12px">
+      <span id="tblCount" style="font-size:12px;font-weight:400"></span>
+      <button onclick="exportToExcel()" style="background:#fff;color:#6a0dad;border:none;border-radius:16px;padding:5px 14px;font-size:12px;font-weight:700;cursor:pointer">⬇️ Export to Excel</button>
+    </div>
   </div>
   <div class="tbl-scroll"><table><thead id="tHead"></thead><tbody id="tBody"></tbody></table></div>
   <div class="pager">
@@ -583,6 +587,12 @@ function applyFilters(){
     }
     // Category
     if(c && normalizeCat(r._category)!==c) return false;
+    // Gender (set via chart click drill-down)
+    if(selectedGender){
+      const b=genderBucket(r._gender);
+      const rowGender = b==='__other__' ? 'Unknown' : b;
+      if(rowGender!==selectedGender) return false;
+    }
     // Date — only filter if user actually picked a date
     if(dfDate || dtDate){
       const d = parseSheetDate(r._date);
@@ -665,21 +675,37 @@ function renderStats(){
 ═══════════════════════════════════════ */
 function mk(id,type,labels,data,opts={}){
   if(charts[id]){charts[id].destroy();delete charts[id];}
-  charts[id]=new Chart(document.getElementById(id),{
+  const canvas=document.getElementById(id);
+  canvas.style.cursor = opts.onBarClick ? 'pointer' : 'default';
+  charts[id]=new Chart(canvas,{
     type,
     data:{labels,datasets:[{data,...opts}]},
-    options:{responsive:true,plugins:{
-      legend:opts.legend||{display:false},
-      tooltip:{callbacks:{label:c=>{
-        // c.raw is always the actual data value regardless of chart orientation (fixes horizontal bar charts showing index instead of value)
-        const v = typeof c.raw==='number' ? c.raw : parseFloat(c.raw);
-        return (isNaN(v)?0:v).toLocaleString();
-      }}}
-    },...(opts.extra||{})}
+    options:{
+      responsive:true,
+      onClick:(evt,elements)=>{
+        if(!opts.onBarClick || !elements.length) return;
+        const idx=elements[0].index;
+        opts.onBarClick(labels[idx], data[idx]);
+      },
+      onHover:(evt,elements)=>{
+        if(opts.onBarClick) evt.native.target.style.cursor = elements.length ? 'pointer':'default';
+      },
+      plugins:{
+        legend:opts.legend||{display:false},
+        tooltip:{callbacks:{label:c=>{
+          // c.raw is always the actual data value regardless of chart orientation (fixes horizontal bar charts showing index instead of value)
+          const v = typeof c.raw==='number' ? c.raw : parseFloat(c.raw);
+          return (isNaN(v)?0:v).toLocaleString();
+        }}}
+      },
+    ...(opts.extra||{})}
   });
 }
 
 function renderCharts(){ renderUnit(); renderGender(); renderCat(); renderLang(); }
+
+// Global filter states set by chart click (drill-down)
+let selectedGender = '';
 
 function renderUnit(){
   const combined=isCombined(allRows);
@@ -692,6 +718,10 @@ function renderUnit(){
   const s=Object.entries(m).sort((a,b)=>b[1]-a[1]);
   mk('cUnit','bar',s.map(x=>x[0]),s.map(x=>x[1]),{
     backgroundColor:'#2e7d32',borderRadius:3,
+    onBarClick:(label)=>{
+      document.getElementById('fUnit').value = label;
+      onUnitChange();
+    },
     extra:{scales:{x:{ticks:{font:{size:9},maxRotation:65},grid:{display:false}},y:{beginAtZero:true}}}
   });
 }
@@ -705,18 +735,42 @@ function renderGender(){
 
   const labels=['Male','Female','Transgender'];
   const data=[counts.Male,counts.Female,counts.Transgender];
-  const colors=['#1565c0','#ad1457','#ff6f00'];
+  const colors=labels.map(l=>{
+    const base = l==='Male'?'#1565c0':l==='Female'?'#ad1457':'#ff6f00';
+    return (selectedGender && selectedGender!==l) ? base+'55' : base; // fade unselected
+  });
   if(counts.Unknown>0){
     labels.push('Unknown');
     data.push(counts.Unknown);
-    colors.push('#7f8c8d');
+    colors.push((selectedGender && selectedGender!=='Unknown') ? '#7f8c8d55' : '#7f8c8d');
   }
   mk('cGender','bar',
     labels,
     data,
     {backgroundColor:colors,borderRadius:5,
+      onBarClick:(label)=>{
+        selectedGender = (selectedGender===label) ? '' : label; // toggle: click again to clear
+        applyFilters();
+      },
       extra:{scales:{x:{ticks:{font:{size:12,weight:'bold'}}},y:{beginAtZero:true}}}}
   );
+  updateGenderFilterChip();
+}
+
+function updateGenderFilterChip(){
+  let chip=document.getElementById('genderFilterChip');
+  if(selectedGender){
+    if(!chip){
+      chip=document.createElement('span');
+      chip.id='genderFilterChip';
+      chip.style.cssText='background:#1565c0;color:#fff;font-size:11px;font-weight:700;padding:4px 10px;border-radius:14px;cursor:pointer;margin-left:6px';
+      document.querySelector('.fbar').appendChild(chip);
+    }
+    chip.textContent = `Gender: ${selectedGender} ✕`;
+    chip.onclick = ()=>{ selectedGender=''; applyFilters(); };
+  } else if(chip){
+    chip.remove();
+  }
 }
 
 function renderCat(){
@@ -731,6 +785,10 @@ function renderCat(){
   const palette=['#e91e63','#9c27b0','#3f51b5','#0097a7','#4caf50','#ff9800','#f44336','#795548','#00838f','#558b2f'];
   mk('cCat','bar',sorted.map(x=>x[0]),sorted.map(x=>x[1]),{
     backgroundColor:sorted.map((_,i)=>palette[i%palette.length]),borderRadius:4,
+    onBarClick:(label)=>{
+      document.getElementById('fCat').value = label;
+      applyFilters();
+    },
     extra:{indexAxis:'y',scales:{x:{beginAtZero:true},y:{ticks:{font:{size:9}}}}}
   });
 }
@@ -742,6 +800,12 @@ function renderLang(){
     ['English','Telugu'],
     [m.English,m.Telugu],
     {backgroundColor:['#1565c0','#e65100'],borderWidth:4,borderColor:'#fff',hoverOffset:8,
+      onBarClick:(label)=>{
+        // Show only clicked language
+        document.getElementById('chkEN').checked = (label==='English');
+        document.getElementById('chkTE').checked = (label==='Telugu');
+        applyFilters();
+      },
       legend:{position:'bottom',labels:{font:{size:13},padding:12}}}
   );
 }
@@ -783,6 +847,42 @@ function renderTable(){
 }
 
 function goPage(d){page+=d;renderTable();document.querySelector('.tbl-wrap').scrollIntoView({behavior:'smooth'});}
+
+/* ═══════════════════════════════════════
+   EXCEL EXPORT — exports currently FILTERED data
+═══════════════════════════════════════ */
+function exportToExcel(){
+  if(!filtered.length){ alert('Export చేయడానికి data లేదు!'); return; }
+  const umap=getUnitMap();
+
+  const rows = filtered.map((r,i)=>{
+    const unit = extractUnit(r._unitPS, umap);
+    const ps   = extractPS(r._unitPS, umap);
+    const cat  = normalizeCat(r._category);
+    return {
+      '#': i+1,
+      'Source': r._source,
+      'Date': r._date,
+      'Submission ID': r._id,
+      'Name of the Unit': unit,
+      'PS Name': ps,
+      'Gender': r._gender,
+      'Category': cat,
+      'Remarks': r._remarks
+    };
+  });
+
+  const ws = XLSX.utils.json_to_sheet(rows);
+  // Auto column widths
+  ws['!cols'] = [
+    {wch:6},{wch:8},{wch:20},{wch:20},{wch:22},{wch:22},{wch:12},{wch:20},{wch:40}
+  ];
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Feedback Records');
+
+  const fname = `QR_Feedback_Export_${new Date().toISOString().slice(0,10)}.xlsx`;
+  XLSX.writeFile(wb, fname);
+}
 function setStatus(t,msg){const e=document.getElementById('statusBar');e.className=t==='ok'?'s-ok':t==='err'?'s-err':'s-load';e.innerHTML=msg;}
 function liveTag(cls,txt){const e=document.getElementById('liveTag');e.className='live '+cls;e.textContent=txt;}
 
