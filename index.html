@@ -11,61 +11,75 @@
 body{background:#dde1f0;min-height:100vh;padding-bottom:30px}
 .hdr{background:linear-gradient(90deg,#0d1b6e 0%,#1a3a8f 50%,#0d1b6e 100%);border-radius:14px;margin:10px;padding:12px 20px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 6px 24px #0005}
 .hdr-left{background:#fff;border-radius:10px;padding:8px 20px;text-align:center;min-width:165px}
-.hdr-left .lbl{font-size:12px;font-weight:800;color:#1a3a8f}
-.hdr-left .cnt{font-size:2.2rem;font-weight:900;color:#c0392b;line-height:1.1}
+.hdr-left .lbl{font-size:15px;font-weight:800;color:#1a3a8f}
+.hdr-left .cnt{font-size:2.9rem;font-weight:900;color:#c0392b;line-height:1.1}
 .hdr-mid{text-align:center;color:#fff}
-.hdr-mid h1{font-size:2rem;font-weight:900;letter-spacing:2px;text-shadow:0 2px 10px #0006}
-.hdr-mid h2{font-size:1.25rem;font-weight:800}
-.hdr-right{background:#fff;border-radius:10px;padding:8px 14px;text-align:center;color:#0d1b6e;font-size:12px}
-.live{font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;margin-top:4px;display:inline-block}
+.hdr-mid h1{font-size:2.7rem;font-weight:900;letter-spacing:2px;text-shadow:0 2px 10px #0006}
+.hdr-mid h2{font-size:1.7rem;font-weight:800}
+.hdr-right{background:#fff;border-radius:10px;padding:8px 14px;text-align:center;color:#0d1b6e;font-size:14px}
+.live{font-size:13px;font-weight:700;padding:3px 10px;border-radius:20px;margin-top:4px;display:inline-block}
 .live.on{background:#27ae60;color:#fff}.live.off{background:#e74c3c;color:#fff}.live.loading{background:#f39c12;color:#fff}
 /* source badges */
 .src-badges{display:flex;gap:6px;justify-content:center;margin-top:5px}
-.badge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px}
+.badge{font-size:13px;font-weight:700;padding:2px 8px;border-radius:10px}
 .badge.en{background:#1565c0;color:#fff}.badge.te{background:#e65100;color:#fff}
-#statusBar{margin:0 10px 6px;padding:8px 16px;border-radius:8px;font-size:13px;font-weight:600;text-align:center}
+#statusBar{margin:0 10px 6px;padding:8px 16px;border-radius:8px;font-size:15px;font-weight:600;text-align:center}
 .s-load{background:#fff3cd;color:#856404}.s-ok{background:#d4edda;color:#155724}.s-err{background:#f8d7da;color:#721c24;line-height:1.8}
 /* load progress */
 #loadProgress{margin:0 10px 8px;display:none}
 .prog-bar{height:8px;border-radius:4px;background:#e0e0e0;overflow:hidden}
 .prog-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,#1a3a8f,#27ae60);transition:width .4s}
-.prog-labels{display:flex;justify-content:space-between;font-size:11px;color:#555;margin-top:4px}
+.prog-labels{display:flex;justify-content:space-between;font-size:13px;color:#555;margin-top:4px}
 .fbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;background:#fff;margin:0 10px 10px;border-radius:10px;padding:10px 16px;box-shadow:0 2px 8px #0002}
-.fbar select,.fbar input[type=date]{border:2px solid #c0392b;border-radius:20px;padding:5px 14px;font-size:12px;color:#0d1b6e;background:#fff;outline:none;cursor:pointer;min-width:140px}
-.rbtn{background:#0d1b6e;color:#fff;border:none;border-radius:20px;padding:6px 18px;font-size:12px;font-weight:700;cursor:pointer;margin-left:auto}
+.fbar select,.fbar input[type=date]{border:2px solid #c0392b;border-radius:20px;padding:7px 16px;font-size:15px;color:#0d1b6e;background:#fff;outline:none;cursor:pointer;min-width:140px}
+.rbtn{background:#0d1b6e;color:#fff;border:none;border-radius:20px;padding:8px 20px;font-size:15px;font-weight:700;cursor:pointer;margin-left:auto}
 .rbtn:hover{background:#c0392b}
-.upd{font-size:11px;color:#888}
+.upd{font-size:13px;color:#888}
 /* lang toggle */
-.lang-toggle{display:flex;gap:6px;align-items:center;font-size:12px;font-weight:700;color:#0d1b6e}
+.lang-toggle{display:flex;gap:6px;align-items:center;font-size:15px;font-weight:700;color:#0d1b6e}
 .lang-toggle label{display:flex;align-items:center;gap:4px;cursor:pointer}
 .lang-toggle input{cursor:pointer}
 .stats-row{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin:0 10px 10px}
 .stat-box{background:#fff;border-radius:10px;padding:10px 8px;text-align:center;box-shadow:0 2px 8px #0002;border-top:4px solid #0d1b6e}
-.stat-box .sv{font-size:1.4rem;font-weight:900;color:#c0392b}
-.stat-box .sk{font-size:10px;color:#555;font-weight:700;margin-top:2px}
+.stat-box .sv{font-size:2rem;font-weight:900;color:#c0392b}
+.stat-box .sk{font-size:14px;color:#555;font-weight:700;margin-top:2px}
 .card{background:#fff;border-radius:12px;box-shadow:0 2px 10px #0002;padding:14px 16px}
-.card h3{font-size:13px;font-weight:800;color:#0d1b6e;margin-bottom:8px}
+.card h3{font-size:18px;font-weight:800;color:#0d1b6e;margin-bottom:8px}
 .row1{margin:0 10px 10px}
 .row2{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin:0 10px 10px}
-.tbl-wrap{margin:0 10px 10px;background:#fff;border-radius:12px;box-shadow:0 2px 10px #0002;overflow:hidden}
+.tbl-wrap,.sum-wrap{margin:0 10px 10px;background:#fff;border-radius:12px;box-shadow:0 2px 10px #0002;overflow:hidden}
 .tbl-head{background:linear-gradient(90deg,#6a0dad,#8e24aa);color:#fff;padding:10px 16px;display:flex;align-items:center;justify-content:space-between}
-.tbl-head h3{font-size:14px;font-weight:800}
+.tbl-head h3{font-size:18px;font-weight:800}
 .tbl-scroll{overflow-x:auto;max-height:320px;overflow-y:auto}
-table{width:100%;border-collapse:collapse;font-size:11.5px}
+table{width:100%;border-collapse:collapse;font-size:14.5px}
 thead th{background:#7b1fa2;color:#fff;padding:7px 10px;text-align:left;position:sticky;top:0;z-index:2;white-space:nowrap}
 tbody tr:nth-child(odd){background:#faf5ff}tbody tr:hover{background:#ede7f6}
 tbody td{padding:6px 10px;border-bottom:1px solid #e0e0e0;white-space:nowrap;max-width:200px;overflow:hidden;text-overflow:ellipsis}
-.src-tag{display:inline-block;font-size:9px;font-weight:700;padding:1px 5px;border-radius:6px;margin-left:4px}
+.src-tag{display:inline-block;font-size:12px;font-weight:700;padding:1px 5px;border-radius:6px;margin-left:4px}
 .src-tag.en{background:#1565c0;color:#fff}.src-tag.te{background:#e65100;color:#fff}
-.pager{display:flex;justify-content:flex-end;align-items:center;gap:10px;padding:8px 16px;border-top:1px solid #eee;font-size:12px}
-.pager button{background:#0d1b6e;color:#fff;border:none;border-radius:6px;padding:4px 12px;cursor:pointer;font-size:12px}
+.pager{display:flex;justify-content:flex-end;align-items:center;gap:10px;padding:8px 16px;border-top:1px solid #eee;font-size:15px}
+.pager button{background:#0d1b6e;color:#fff;border:none;border-radius:6px;padding:5px 14px;cursor:pointer;font-size:14px}
 .pager button:disabled{background:#bbb;cursor:default}
 .spinner{display:inline-block;width:14px;height:14px;border:3px solid #ccc;border-top-color:#856404;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:6px}
 @keyframes spin{to{transform:rotate(360deg)}}
 #loadOverlay{position:fixed;inset:0;background:#ffffffdd;z-index:999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;font-size:16px;font-weight:700;color:#0d1b6e}
 .big-spin{width:52px;height:52px;border:6px solid #dde1f0;border-top-color:#0d1b6e;border-radius:50%;animation:spin .8s linear infinite}
-.inst-box{background:#e8f5e9;border:2px solid #27ae60;border-radius:10px;padding:14px 18px;margin:0 10px 10px;font-size:13px;color:#1b5e20;display:none}
+.inst-box{background:#e8f5e9;border:2px solid #27ae60;border-radius:10px;padding:14px 18px;margin:0 10px 10px;font-size:15px;color:#1b5e20;display:none}
 .inst-box ol{margin:8px 0 0 20px;line-height:2}
+
+/* Unit / PS / Category summary table */
+.sum-wrap{border:2px solid #9c1a5c}
+.sumtbl{font-size:15px}
+.sumtbl thead th{background:#6a1b9a;font-size:16px;padding:11px 14px;cursor:pointer;user-select:none}
+.sumtbl thead th.nosort{cursor:default}
+.sumtbl thead th:hover{background:#7e2bb0}
+.sumtbl tbody tr:nth-child(odd){background:#deebec}
+.sumtbl tbody tr:nth-child(even){background:#fff}
+.sumtbl tbody tr:hover{background:#cde3e6}
+.sumtbl tbody td{padding:8px 14px;border-bottom:1px solid #2e9e3a66;max-width:none;white-space:nowrap}
+.sumtbl td.num,.sumtbl th.num{text-align:center}
+.sumtbl td.num{font-weight:700}
+.sumtbl td.idx{color:#555}
 @media(max-width:900px){.row2,.stats-row{grid-template-columns:1fr 1fr}.hdr{flex-direction:column;gap:8px;text-align:center}}
 @media(max-width:600px){.row2,.stats-row{grid-template-columns:1fr}}
 </style>
@@ -140,21 +154,37 @@ tbody td{padding:6px 10px;border-bottom:1px solid #e0e0e0;white-space:nowrap;max
 
 <div class="row1 card">
   <h3>📊 Unit wise Feedbacks</h3>
-  <canvas id="cUnit" height="70"></canvas>
+  <canvas id="cUnit" height="95"></canvas>
 </div>
 
 <div class="row2">
-  <div class="card"><h3>👥 Gender Distribution</h3><canvas id="cGender" height="220"></canvas></div>
-  <div class="card"><h3>📂 Category Distribution</h3><canvas id="cCat" height="220"></canvas></div>
-  <div class="card"><h3>🌐 Language (EN vs TE)</h3><canvas id="cLang" height="220"></canvas></div>
+  <div class="card"><h3>👥 Gender Distribution</h3><canvas id="cGender" height="270"></canvas></div>
+  <div class="card"><h3>📂 Category Distribution</h3><canvas id="cCat" height="270"></canvas></div>
+  <div class="card"><h3>🌐 Language (EN vs TE)</h3><canvas id="cLang" height="270"></canvas></div>
+</div>
+
+<div class="sum-wrap" style="margin:0 10px 10px;background:#fff;border-radius:12px;box-shadow:0 2px 10px #0002;overflow:hidden">
+  <div class="tbl-head">
+    <h3>📑 Unit / PS / Category wise Feedback Summary</h3>
+    <div style="display:flex;align-items:center;gap:12px">
+      <span id="sumCount" style="font-size:15px;font-weight:400"></span>
+      <button onclick="exportSummaryExcel()" style="background:#fff;color:#6a0dad;border:none;border-radius:16px;padding:6px 16px;font-size:14px;font-weight:700;cursor:pointer">⬇️ Export to Excel</button>
+    </div>
+  </div>
+  <div class="tbl-scroll" style="max-height:480px"><table class="sumtbl"><thead id="sumHead"></thead><tbody id="sumBody"></tbody></table></div>
+  <div class="pager">
+    <span id="sumPageInfo"></span>
+    <button id="sumPrev" onclick="sumGo(-1)" disabled>◀ Prev</button>
+    <button id="sumNext" onclick="sumGo(1)">Next ▶</button>
+  </div>
 </div>
 
 <div class="tbl-wrap">
   <div class="tbl-head">
     <h3>📋 Feedback Records</h3>
     <div style="display:flex;align-items:center;gap:12px">
-      <span id="tblCount" style="font-size:12px;font-weight:400"></span>
-      <button onclick="exportToExcel()" style="background:#fff;color:#6a0dad;border:none;border-radius:16px;padding:5px 14px;font-size:12px;font-weight:700;cursor:pointer">⬇️ Export to Excel</button>
+      <span id="tblCount" style="font-size:15px;font-weight:400"></span>
+      <button onclick="exportToExcel()" style="background:#fff;color:#6a0dad;border:none;border-radius:16px;padding:6px 16px;font-size:14px;font-weight:700;cursor:pointer">⬇️ Export to Excel</button>
     </div>
   </div>
   <div class="tbl-scroll"><table><thead id="tHead"></thead><tbody id="tBody"></tbody></table></div>
@@ -185,6 +215,14 @@ const SHEETS = [
 ];
 
 const PAGE_SIZE = 25;
+// Bigger default fonts for every chart (axis labels, legends, tooltips)
+if(window.Chart){
+  Chart.defaults.font.size=14;
+  Chart.defaults.font.family="'Segoe UI',Arial,sans-serif";
+  Chart.defaults.plugins.tooltip.titleFont={size:15,weight:'bold'};
+  Chart.defaults.plugins.tooltip.bodyFont={size:15};
+  Chart.defaults.plugins.tooltip.padding=10;
+}
 let allRows = [], filtered = [], page = 1, charts = {};
 let _unitMap = null;
 
@@ -612,7 +650,7 @@ function applyFilters(){
   document.getElementById('enCount').textContent = `EN: ${enFiltered.toLocaleString()}`;
   document.getElementById('teCount').textContent = `TE: ${teFiltered.toLocaleString()}`;
 
-  renderStats();renderCharts();renderTable();
+  sumPage=1;renderStats();renderCharts();renderTable();renderSummary();
 }
 
 /* ═══════════════════════════════════════
@@ -722,7 +760,7 @@ function renderUnit(){
       document.getElementById('fUnit').value = label;
       onUnitChange();
     },
-    extra:{scales:{x:{ticks:{font:{size:9},maxRotation:65},grid:{display:false}},y:{beginAtZero:true}}}
+    extra:{scales:{x:{ticks:{font:{size:12},maxRotation:65},grid:{display:false}},y:{beginAtZero:true}}}
   });
 }
 
@@ -752,7 +790,7 @@ function renderGender(){
         selectedGender = (selectedGender===label) ? '' : label; // toggle: click again to clear
         applyFilters();
       },
-      extra:{scales:{x:{ticks:{font:{size:12,weight:'bold'}}},y:{beginAtZero:true}}}}
+      extra:{scales:{x:{ticks:{font:{size:15,weight:'bold'}}},y:{beginAtZero:true}}}}
   );
   updateGenderFilterChip();
 }
@@ -763,7 +801,7 @@ function updateGenderFilterChip(){
     if(!chip){
       chip=document.createElement('span');
       chip.id='genderFilterChip';
-      chip.style.cssText='background:#1565c0;color:#fff;font-size:11px;font-weight:700;padding:4px 10px;border-radius:14px;cursor:pointer;margin-left:6px';
+      chip.style.cssText='background:#1565c0;color:#fff;font-size:14px;font-weight:700;padding:5px 12px;border-radius:14px;cursor:pointer;margin-left:6px';
       document.querySelector('.fbar').appendChild(chip);
     }
     chip.textContent = `Gender: ${selectedGender} ✕`;
@@ -789,7 +827,7 @@ function renderCat(){
       document.getElementById('fCat').value = label;
       applyFilters();
     },
-    extra:{indexAxis:'y',scales:{x:{beginAtZero:true},y:{ticks:{font:{size:9}}}}}
+    extra:{indexAxis:'y',scales:{x:{beginAtZero:true},y:{ticks:{font:{size:13}}}}}
   });
 }
 
@@ -806,7 +844,7 @@ function renderLang(){
         document.getElementById('chkTE').checked = (label==='Telugu');
         applyFilters();
       },
-      legend:{position:'bottom',labels:{font:{size:13},padding:12}}}
+      legend:{position:'bottom',labels:{font:{size:16},padding:14}}}
   );
 }
 
@@ -882,6 +920,88 @@ function exportToExcel(){
 
   const fname = `QR_Feedback_Export_${new Date().toISOString().slice(0,10)}.xlsx`;
   XLSX.writeFile(wb, fname);
+}
+
+/* ═══════════════════════════════════════
+   UNIT / PS / CATEGORY SUMMARY TABLE
+═══════════════════════════════════════ */
+const SUM_PAGE_SIZE=50;
+let sumPage=1, sumSort={key:'unit',dir:1}, sumData=[];
+function escH(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+function buildSummaryData(){
+  const umap=getUnitMap();
+  const cache=new Map();   // raw unit/PS text -> {unit, ps} (avoids re-parsing 60k rows)
+  const agg=new Map();
+  filtered.forEach(r=>{
+    let u=cache.get(r._unitPS);
+    if(!u){ u={unit:extractUnit(r._unitPS,umap), ps:extractPS(r._unitPS,umap)}; cache.set(r._unitPS,u); }
+    const cat=normalizeCat(r._category)||'Other';
+    const key=u.unit+'\u0001'+u.ps+'\u0001'+cat;
+    const e=agg.get(key);
+    if(e) e.count++; else agg.set(key,{unit:u.unit,ps:u.ps,cat:cat,count:1});
+  });
+  return [...agg.values()];
+}
+function sortSummary(arr){
+  const k=sumSort.key, d=sumSort.dir;
+  const cmp=(a,b)=>String(a).localeCompare(String(b),undefined,{sensitivity:'base'});
+  arr.sort((a,b)=>{
+    let c=0;
+    if(k==='count') c=a.count-b.count;
+    else if(k==='ps') c=cmp(a.ps,b.ps);
+    else if(k==='cat') c=cmp(a.cat,b.cat);
+    else c=cmp(a.unit,b.unit);
+    if(c!==0) return c*d;
+    return cmp(a.unit,b.unit)||cmp(a.ps,b.ps)||cmp(a.cat,b.cat);
+  });
+}
+function renderSummary(){
+  sumData=buildSummaryData();
+  sortSummary(sumData);
+  drawSummary();
+}
+function drawSummary(){
+  const total=sumData.length;
+  const pages=Math.max(1,Math.ceil(total/SUM_PAGE_SIZE));
+  if(sumPage>pages) sumPage=pages;
+  if(sumPage<1) sumPage=1;
+  const s=(sumPage-1)*SUM_PAGE_SIZE, sl=sumData.slice(s,s+SUM_PAGE_SIZE);
+  const ar=k=>sumSort.key===k?(sumSort.dir===1?' ▲':' ▼'):'';
+  document.getElementById('sumHead').innerHTML=
+    '<tr><th class="nosort" style="width:60px">#</th>'+
+    '<th onclick="sumSortBy(\'unit\')">Unit Name'+ar('unit')+'</th>'+
+    '<th onclick="sumSortBy(\'ps\')">PS Name'+ar('ps')+'</th>'+
+    '<th onclick="sumSortBy(\'cat\')">Type of Feedback Category'+ar('cat')+'</th>'+
+    '<th class="num" onclick="sumSortBy(\'count\')">Total Feedbacks'+ar('count')+'</th></tr>';
+  document.getElementById('sumBody').innerHTML=sl.map((r,i)=>
+    '<tr><td class="idx">'+(s+i+1)+'.</td><td>'+escH(r.unit)+'</td><td>'+escH(r.ps)+'</td><td>'+escH(r.cat)+'</td><td class="num">'+r.count.toLocaleString()+'</td></tr>'
+  ).join('');
+  document.getElementById('sumCount').textContent=total.toLocaleString()+' rows';
+  document.getElementById('sumPageInfo').textContent=(total?s+1:0).toLocaleString()+' - '+Math.min(s+SUM_PAGE_SIZE,total).toLocaleString()+' / '+total.toLocaleString();
+  document.getElementById('sumPrev').disabled=sumPage<=1;
+  document.getElementById('sumNext').disabled=sumPage>=pages;
+}
+function sumSortBy(k){
+  if(sumSort.key===k) sumSort.dir=-sumSort.dir;
+  else sumSort={key:k,dir:(k==='count'?-1:1)};
+  sumPage=1;
+  sortSummary(sumData);
+  drawSummary();
+}
+function sumGo(d){
+  sumPage+=d;
+  drawSummary();
+  const sc=document.querySelector('.sum-wrap .tbl-scroll'); if(sc) sc.scrollTop=0;
+}
+function exportSummaryExcel(){
+  if(!sumData.length){ alert('Export చేయడానికి data లేదు!'); return; }
+  const rows=sumData.map((r,i)=>({'#':i+1,'Unit Name':r.unit,'PS Name':r.ps,'Type of Feedback Category':r.cat,'Total Feedbacks':r.count}));
+  const ws=XLSX.utils.json_to_sheet(rows);
+  ws['!cols']=[{wch:6},{wch:26},{wch:28},{wch:28},{wch:16}];
+  const wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb,ws,'Unit PS Category Summary');
+  XLSX.writeFile(wb,'QR_Feedback_Unit_PS_Category_Summary_'+new Date().toISOString().slice(0,10)+'.xlsx');
 }
 function setStatus(t,msg){const e=document.getElementById('statusBar');e.className=t==='ok'?'s-ok':t==='err'?'s-err':'s-load';e.innerHTML=msg;}
 function liveTag(cls,txt){const e=document.getElementById('liveTag');e.className='live '+cls;e.textContent=txt;}
