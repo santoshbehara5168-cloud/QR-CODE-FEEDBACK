@@ -237,28 +237,53 @@ const COL_MAP = {
   // Unit & PS (combined)
   unitPS:         ['name of the unit & ps','name of the unit','యూనిట్ & పీఎస్ పేరు','యూనిట్','unit & ps','unit name'],
   // Gender
-  gender:         ['gender','లింగం','sex'],
+  gender:         ['gender','జెండర్','లింగం','sex'],
   // Category
-  category:       ['type of category','category of feedback','category','విభాగం','కేటగిరీ','feedback category','type of cat','subject'],
+  category:       ['type of category','category of feedback','category','విభాగం','కేటగిరీ','feedback category','type of cat','subject','అభిప్రాయ విషయాన్ని','విషయాన్ని ఎంచుకోండి'],
   // Remarks
   remarks:        ['area for remarks','remarks','వ్యాఖ్యలు','feedback','area of remarks'],
   // PS Code
   psCode:         ['ps code','పీఎస్ కోడ్','code'],
 };
 
+// Text normaliser used for headers and values: NFC, strips zero-width chars, collapses spaces, lowercases
+function _nt(s){
+  return String(s==null?'':s).normalize('NFC').replace(/[\u200b-\u200d\u2060\ufeff]/g,'').replace(/[\s\u00A0]+/g,' ').trim().toLowerCase();
+}
 function findCol(hdrs, key){
   const kws = COL_MAP[key] || [key];
+  const H = hdrs.map(_nt);
   // exact match first
   for(const k of kws){
-    const i = hdrs.findIndex(h=>h.trim().toLowerCase()===k.trim().toLowerCase());
+    const kn=_nt(k);
+    const i = H.findIndex(h=>h===kn);
     if(i>=0) return i;
   }
   // partial match
   for(const k of kws){
-    const i = hdrs.findIndex(h=>h.trim().toLowerCase().includes(k.trim().toLowerCase()));
+    const kn=_nt(k);
+    const i = H.findIndex(h=>h.includes(kn));
     if(i>=0) return i;
   }
   return -1;
+}
+
+// Fallback when a header name is not recognised: pick the column whose VALUES look right
+function detectColByContent(rows, testFn, skip){
+  const sample = rows.slice(0,400);
+  if(!sample.length) return -1;
+  const ncol = Math.max(...sample.map(r=>r.length));
+  let best=-1, bestHit=0;
+  for(let col=0; col<ncol; col++){
+    if(skip && skip.indexOf(col)>=0) continue;
+    let nonEmpty=0, hit=0;
+    for(const r of sample){
+      const v=(r[col]||'').trim();
+      if(v){ nonEmpty++; if(testFn(v)) hit++; }
+    }
+    if(nonEmpty>=10 && hit/nonEmpty>0.6 && hit>bestHit){ best=col; bestHit=hit; }
+  }
+  return best;
 }
 
 /* ═══════════════════════════════════════
@@ -419,10 +444,10 @@ async function fetchSheet(sheet){
 /* ═══════════════════════════════════════
    NORMALIZE ROW → standard fields
 ═══════════════════════════════════════ */
-function normalizeRow(hdrs, cells, sheetMeta){
+function normalizeRow(hdrs, cells, sheetMeta, cols){
   const get=(key)=>{
-    const i=findCol(hdrs,key);
-    return i>=0?(cells[i]||'').trim():'';
+    const i=cols[key];
+    return (i!=null && i>=0)?(cells[i]||'').trim():'';
   };
   return {
     _source:     sheetMeta.tag,      // 'EN' or 'TE'
@@ -465,8 +490,19 @@ async function loadData(){
       const hdrs=lines[0];
       const rows=lines.slice(1).filter(r=>r.some(c=>c));
 
+      // Find each column ONCE per sheet (English and Telugu sheets use different header text)
+      const cols={};
+      ['submissionDate','submissionId','unitPS','gender','category','remarks','psCode'].forEach(k=>{ cols[k]=findCol(hdrs,k); });
+      if(cols.gender<0){
+        cols.gender=detectColByContent(rows,v=>{const b=genderBucket(v);return b==='Male'||b==='Female'||b==='Transgender';},[cols.unitPS]);
+      }
+      if(cols.category<0){
+        const labels=new Set(CAT_GROUPS.map(g=>g.label));
+        cols.category=detectColByContent(rows,v=>labels.has(normalizeCat(v)),[cols.unitPS,cols.gender]);
+      }
+
       rows.forEach(cells=>{
-        const norm=normalizeRow(hdrs,cells,sheet);
+        const norm=normalizeRow(hdrs,cells,sheet,cols);
         merged.push(norm);
       });
       if(sheet.tag==='EN') enCount=rows.length;
@@ -627,9 +663,7 @@ function applyFilters(){
     if(c && normalizeCat(r._category)!==c) return false;
     // Gender (set via chart click drill-down)
     if(selectedGender){
-      const b=genderBucket(r._gender);
-      const rowGender = b==='__other__' ? 'Unknown' : b;
-      if(rowGender!==selectedGender) return false;
+      if(genderBucket(r._gender)!==selectedGender) return false;
     }
     // Date — only filter if user actually picked a date
     if(dfDate || dtDate){
@@ -661,7 +695,7 @@ const CAT_GROUPS=[
   {label:'Other Services',        keys:['other service','ఇతర సేవలు','ఇతర సేవ']},
   {label:'Passport Verification', keys:['passport','పాస్పోర్ట్','పాస్‌పోర్ట్']},
   {label:'On Site FIR',           keys:['on site fir','on-site fir','onsite fir','ఆన్ సైట్','సైట్‌లో']},
-  {label:'FIR',                   keys:['fir','ఎఫ్‌ఐఆర్','ఎఫ్ఐఆర్','f.i.r']},
+  {label:'FIR',                   keys:['fir','ఎఫ్‌ఐఆర్','ఎఫ్ఐఆర్','ఎఫ్ ఐ ఆర్','f.i.r']},
   {label:'e-Challan',             keys:['challan','ఈ-చలాన్','ఈచలాన్','ఈ చలాన్']},
   {label:'Complaint',             keys:['complaint','ఫిర్యాదు']},
   {label:'Women Safety',          keys:['women safety','మహిళా భద్రత']},
@@ -669,30 +703,50 @@ const CAT_GROUPS=[
   {label:'Traffic',               keys:['traffic','ట్రాఫిక్']},
 ];
 
+const _catKeysN = CAT_GROUPS.map(g=>({label:g.label, keys:g.keys.map(_nt)}));
+const _catCache = new Map();
 function normalizeCat(raw){
-  if(!raw) return '';
-  const vl=raw.toLowerCase().trim();
-  for(const g of CAT_GROUPS){
+  const vl=_nt(raw);
+  if(!vl) return 'Not Filled';            // no data in the sheet for this record
+  let res=_catCache.get(vl);
+  if(res!==undefined) return res;
+  res=String(raw).trim();                 // unmatched value stays as it is
+  outer:
+  for(const g of _catKeysN){
     for(const k of g.keys){
-      if(vl.includes(k.toLowerCase())) return g.label;
+      if(vl.includes(k)){ res=g.label; break outer; }
     }
   }
-  return raw;
+  _catCache.set(vl,res);
+  return res;
 }
 
 /* ═══════════════════════════════════════
    GENDER NORMALIZATION
 ═══════════════════════════════════════ */
-const MALE_KEYS  =['male','పురుషుడు','man','purushud','మగ'];
-const FEMALE_KEYS=['female','స్త్రీ','woman','stree','ఆడ','స్త్రి'];
-const TRANS_KEYS =['transgender','థర్డ్ జెండర్','third gender','trans','తృతీయ','hijra'];
-
+const GENDER_EXACT = {};
+['male','m','man','పురుషుడు','పురుషులు','పురుష'].forEach(v=>GENDER_EXACT[_nt(v)]='Male');
+['female','f','woman','స్త్రీ','స్త్రి','స్త్రీలు','మహిళ'].forEach(v=>GENDER_EXACT[_nt(v)]='Female');
+['transgender','third gender','థర్డ్ జెండర్','థర్డ్‌ జెండర్','ట్రాన్స్‌జెండర్','ట్రాన్స్ జెండర్'].forEach(v=>GENDER_EXACT[_nt(v)]='Transgender');
+// partial keys — IMPORTANT order: Transgender, then Female, then Male
+// ("female" contains "male" and "woman" contains "man", so Male must be checked LAST)
+const TRANS_KEYS_N  = ['transgender','third gender','థర్డ్','తృతీయ','hijra','trans'].map(_nt);
+const FEMALE_KEYS_N = ['female','woman','women','స్త్రీ','స్త్రి','మహిళ','ఆడ','stree'].map(_nt);
+const MALE_KEYS_N   = ['male','man','men','పురుష','purushud','మగ'].map(_nt);
+const _genderCache = new Map();
+// returns: 'Male' | 'Female' | 'Transgender' | 'Not Filled' (blank) | 'Other' (something else)
 function genderBucket(val){
-  const vl=normSpace(val).toLowerCase();
-  if(MALE_KEYS.some(k=>vl.includes(k)))   return 'Male';
-  if(FEMALE_KEYS.some(k=>vl.includes(k))) return 'Female';
-  if(TRANS_KEYS.some(k=>vl.includes(k)))  return 'Transgender';
-  return '__other__';
+  const v=_nt(val);
+  if(!v) return 'Not Filled';
+  let res=_genderCache.get(v);
+  if(res!==undefined) return res;
+  if(GENDER_EXACT[v]) res=GENDER_EXACT[v];
+  else if(TRANS_KEYS_N.some(k=>v.includes(k)))  res='Transgender';
+  else if(FEMALE_KEYS_N.some(k=>v.includes(k))) res='Female';
+  else if(MALE_KEYS_N.some(k=>v.includes(k)))   res='Male';
+  else res='Other';
+  _genderCache.set(v,res);
+  return res;
 }
 
 /* ═══════════════════════════════════════
@@ -765,11 +819,8 @@ function renderUnit(){
 }
 
 function renderGender(){
-  const counts={Male:0,Female:0,Transgender:0,Unknown:0};
-  filtered.forEach(r=>{
-    const b=genderBucket(r._gender);
-    counts[b==='__other__'?'Unknown':b]++;
-  });
+  const counts={Male:0,Female:0,Transgender:0,'Not Filled':0,Other:0};
+  filtered.forEach(r=>{ counts[genderBucket(r._gender)]++; });
 
   const labels=['Male','Female','Transgender'];
   const data=[counts.Male,counts.Female,counts.Transgender];
@@ -777,11 +828,13 @@ function renderGender(){
     const base = l==='Male'?'#1565c0':l==='Female'?'#ad1457':'#ff6f00';
     return (selectedGender && selectedGender!==l) ? base+'55' : base; // fade unselected
   });
-  if(counts.Unknown>0){
-    labels.push('Unknown');
-    data.push(counts.Unknown);
-    colors.push((selectedGender && selectedGender!=='Unknown') ? '#7f8c8d55' : '#7f8c8d');
-  }
+  [['Not Filled','#7f8c8d'],['Other','#34495e']].forEach(([l,col])=>{
+    if(counts[l]>0){
+      labels.push(l);
+      data.push(counts[l]);
+      colors.push((selectedGender && selectedGender!==l) ? col+'55' : col);
+    }
+  });
   mk('cGender','bar',
     labels,
     data,
@@ -872,7 +925,7 @@ function renderTable(){
       <td>${r._date}</td>
       <td title="${unit}">${unit}</td>
       <td title="${ps}">${ps}</td>
-      <td>${r._gender}</td>
+      <td>${genderBucket(r._gender)}</td>
       <td title="${cat}">${cat}</td>
       <td title="${r._remarks}">${r._remarks}</td>
     </tr>`;
@@ -904,7 +957,7 @@ function exportToExcel(){
       'Submission ID': r._id,
       'Name of the Unit': unit,
       'PS Name': ps,
-      'Gender': r._gender,
+      'Gender': genderBucket(r._gender),
       'Category': cat,
       'Remarks': r._remarks
     };
@@ -946,7 +999,12 @@ function buildSummaryData(){
 function sortSummary(arr){
   const k=sumSort.key, d=sumSort.dir;
   const cmp=(a,b)=>String(a).localeCompare(String(b),undefined,{sensitivity:'base'});
+  // rows with a blank Unit Name / PS Name always stay at the end:
+  // complete rows first, then rows with no PS name, and rows with no Unit name last
+  const missing=r=>!String(r.unit||'').trim()?2:(!String(r.ps||'').trim()?1:0);
   arr.sort((a,b)=>{
+    const m=missing(a)-missing(b);
+    if(m!==0) return m;
     let c=0;
     if(k==='count') c=a.count-b.count;
     else if(k==='ps') c=cmp(a.ps,b.ps);
